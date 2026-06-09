@@ -3,11 +3,14 @@ import 'package:mechanix_messages/features/messages/data/models/conversation_mod
 import 'package:mechanix_messages/features/messages/data/models/message_model.dart';
 
 abstract class MessageRepository {
-  Future<List<ConversationEntity>> getConversations();
-
-  Future<List<ConversationEntity>> getUnreadConversations();
+  Future<List<ConversationEntity>> getConversations({
+    ConversationFilter filter = ConversationFilter.all,
+    String query = '',
+  });
 
   Future<ConversationEntity?> getConversationById(int id);
+
+  Future<ConversationEntity> getOrCreateConversation(String phoneNumber);
 
   Future<MessageEntity> insertMessage(
     String phoneNumber,

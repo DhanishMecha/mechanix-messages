@@ -1,6 +1,5 @@
 import 'package:mechanix_messages/features/messages/data/models/message_model.dart';
-import 'package:mechanix_messages/features/messages/data/models/phone_number_model.dart';
-import 'package:objectbox/objectbox.dart';
+import 'package:mechanix_contacts/mechanix_contacts.dart';
 
 @Entity()
 class ConversationEntity {
@@ -12,9 +11,6 @@ class ConversationEntity {
   @Unique()
   String phoneNumber;
 
-  /// Optional link to a saved contact's phone number entry.
-  final phone = ToOne<PhoneNumberEntity>();
-
   @Property(type: PropertyType.date)
   DateTime createdAt;
 
@@ -23,6 +19,9 @@ class ConversationEntity {
 
   @Backlink('conversation')
   final messages = ToMany<MessageEntity>();
+
+  @Transient()
+  ContactEntity? contact;
 
   ConversationEntity({
     required this.phoneNumber,

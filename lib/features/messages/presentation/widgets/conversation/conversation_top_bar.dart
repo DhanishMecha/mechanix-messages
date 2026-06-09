@@ -13,7 +13,7 @@ class ConversationTopBar extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    final contact = conversation.phone.target?.contact.target;
+    final contact = conversation.contact;
     final name = contact?.name ?? conversation.phoneNumber;
     final initials = getInitials(name);
 
@@ -67,8 +67,6 @@ class ConversationTopBar extends StatelessWidget
       ),
     );
   }
-
-
 
   @override
   Size get preferredSize => const Size.fromHeight(60);

@@ -14,7 +14,6 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       super(const ConversationInitial()) {
     on<LoadConversation>(_onLoadConversation);
     on<SendMessage>(_onSendMessage);
-    on<_ReceiveMockReply>(_onReceiveMockReply);
   }
 
   Future<void> _onLoadConversation(
@@ -66,65 +65,9 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
           ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
 
         emit(ConversationLoaded(conversation: updated, messages: messages));
-
-        // Simulate a simple mock reply after 1.5 seconds
-        final text = event.body.toLowerCase();
-        String replyText = "Received! Let me look into that.";
-        if (text.contains("hello") || text.contains("hi")) {
-          replyText = "Hello there! How can I help you today?";
-        } else if (text.contains("cafe")) {
-          replyText = "Sure, let's meet at the cafe at 4 PM.";
-        } else if (text.contains("app") || text.contains("comet")) {
-          replyText =
-              "Running it on Comet is very smooth, we should configure it first.";
-        }
-
-        Future.delayed(const Duration(milliseconds: 1500)).then((_) {
-          if (!isClosed) {
-            add(_ReceiveMockReply(replyText));
-          }
-        });
       }
     } catch (e) {
       emit(ConversationError(e.toString()));
     }
   }
-
-  Future<void> _onReceiveMockReply(
-    _ReceiveMockReply event,
-    Emitter<ConversationState> emit,
-  ) async {
-    final current = state;
-    if (current is! ConversationLoaded) return;
-
-    try {
-      final phoneNumber = current.conversation.phoneNumber;
-      await _repository.insertMessage(
-        phoneNumber,
-        event.body,
-        MessageDirection.incoming,
-      );
-
-      final updated = await _repository.getConversationById(
-        current.conversation.id,
-      );
-      if (updated != null) {
-        final messages = List<MessageEntity>.from(updated.messages)
-          ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
-
-        emit(ConversationLoaded(conversation: updated, messages: messages));
-      }
-    } catch (e) {
-      // Fail silently for mock reply
-    }
-  }
-}
-
-class _ReceiveMockReply extends ConversationEvent {
-  final String body;
-
-  const _ReceiveMockReply(this.body);
-
-  @override
-  List<Object?> get props => [body];
 }

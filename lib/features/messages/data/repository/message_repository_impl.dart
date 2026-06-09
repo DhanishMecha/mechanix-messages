@@ -1,10 +1,10 @@
 import 'package:mechanix_messages/core/services/objectbox_service.dart';
 import 'package:mechanix_messages/core/utils/enums.dart';
-import 'package:mechanix_messages/features/messages/data/models/contact_model.dart';
+import 'package:mechanix_messages/core/utils/app_logger.dart';
 import 'package:mechanix_messages/features/messages/data/models/conversation_model.dart';
 import 'package:mechanix_messages/features/messages/data/models/message_model.dart';
-import 'package:mechanix_messages/features/messages/data/models/phone_number_model.dart';
 import 'package:mechanix_messages/features/messages/data/repository/message_repository.dart';
+import 'package:mechanix_contacts/mechanix_contacts.dart';
 import 'package:mechanix_messages/objectbox.g.dart';
 
 class MessageRepositoryImpl implements MessageRepository {
@@ -13,35 +13,230 @@ class MessageRepositoryImpl implements MessageRepository {
   MessageRepositoryImpl();
 
   Future<ObjectBoxService> _getBox() async {
-    _objectBox ??= await ObjectBoxService.init();
-    return _objectBox!;
+    try {
+      if (_objectBox == null) {
+        AppLogger.i('Initializing ObjectBox  connections...');
+        await ContactsStoreService.ensureConnected();
+        _objectBox = await ObjectBoxService.init();
+        AppLogger.i('ObjectBox initialized successfully.');
+      }
+      return _objectBox!;
+    } catch (e, stack) {
+      AppLogger.e('Failed to initialize ObjectBox', error: e, stack: stack);
+      rethrow;
+    }
+  }
+
+  ContactEntity? _getContactForPhoneNumber(String phoneNumber) {
+    try {
+      final phoneBox = ContactsStoreService.phoneNumbers;
+      final query = phoneBox
+          .query(PhoneNumberEntity_.number.equals(phoneNumber))
+          .build();
+      final phoneEntity = query.findFirst();
+      query.close();
+      return phoneEntity?.contact.target;
+    } catch (_) {
+      return null;
+    }
   }
 
   @override
-  Future<List<ConversationEntity>> getConversations() async {
-    final boxService = await _getBox();
-    final query = boxService.store
-        .box<ConversationEntity>()
-        .query()
-        .order(ConversationEntity_.updatedAt, flags: Order.descending)
-        .build();
-    final conversations = query.find();
-    query.close();
-    return conversations;
-  }
+  Future<List<ConversationEntity>> getConversations({
+    ConversationFilter filter = ConversationFilter.all,
+    String query = '',
+  }) async {
+    try {
+      final boxService = await _getBox();
+      final conversationBox = boxService.store.box<ConversationEntity>();
 
-  @override
-  Future<List<ConversationEntity>> getUnreadConversations() async {
-    final conversations = await getConversations();
-    return conversations
-        .where((c) => c.messages.any((m) => m.readAt == null))
-        .toList();
+      Condition<ConversationEntity>? cond;
+
+      // 1. Filter by unread status if required
+      if (filter == ConversationFilter.unread) {
+        final messageBox = boxService.store.box<MessageEntity>();
+        final unreadQuery = messageBox
+            .query(
+              MessageEntity_.readAt.isNull().and(
+                MessageEntity_.direction.equals(
+                  MessageDirection.incoming.index,
+                ),
+              ),
+            )
+            .build();
+        final unreadMessages = unreadQuery.find();
+        unreadQuery.close();
+
+        if (unreadMessages.isEmpty) {
+          AppLogger.d(
+            'Loaded 0 unread conversations from database (short circuit).',
+          );
+          return <ConversationEntity>[];
+        }
+
+        final unreadConvIds = unreadMessages
+            .map((m) => m.conversation.targetId)
+            .toSet()
+            .toList();
+        cond = ConversationEntity_.id.oneOf(unreadConvIds);
+      }
+
+      // 2. Filter by search query if present
+      if (query.isNotEmpty) {
+        final List<String> matchingContactPhoneNumbers = [];
+        try {
+          final contactBox = ContactsStoreService.contacts;
+          final cQuery = contactBox
+              .query(ContactEntity_.name.contains(query, caseSensitive: false))
+              .build();
+          final matchingContacts = cQuery.find();
+          cQuery.close();
+          for (final contact in matchingContacts) {
+            for (final phone in contact.phoneNumbers) {
+              matchingContactPhoneNumbers.add(phone.number);
+            }
+          }
+        } catch (_) {}
+
+        final messageBox = boxService.store.box<MessageEntity>();
+        final mQuery = messageBox
+            .query(MessageEntity_.body.contains(query, caseSensitive: false))
+            .build();
+        final matchingMessages = mQuery.find();
+        mQuery.close();
+        final convIdsFromMessages = matchingMessages
+            .map((m) => m.conversation.targetId)
+            .toSet()
+            .toList();
+
+        Condition<ConversationEntity> searchCond = ConversationEntity_
+            .phoneNumber
+            .contains(query, caseSensitive: false);
+
+        if (matchingContactPhoneNumbers.isNotEmpty) {
+          searchCond = searchCond.or(
+            ConversationEntity_.phoneNumber.oneOf(matchingContactPhoneNumbers),
+          );
+        }
+
+        if (convIdsFromMessages.isNotEmpty) {
+          searchCond = searchCond.or(
+            ConversationEntity_.id.oneOf(convIdsFromMessages),
+          );
+        }
+
+        if (cond == null) {
+          cond = searchCond;
+        } else {
+          cond = cond.and(searchCond);
+        }
+      }
+
+      final queryBuilder = conversationBox.query(cond)
+        ..order(ConversationEntity_.updatedAt, flags: Order.descending);
+      final q = queryBuilder.build();
+      final conversations = q.find();
+      q.close();
+
+      final phoneNumbers = conversations.map((c) => c.phoneNumber).toList();
+      if (phoneNumbers.isNotEmpty) {
+        final phoneBox = ContactsStoreService.phoneNumbers;
+        final phoneQuery = phoneBox
+            .query(PhoneNumberEntity_.number.oneOf(phoneNumbers))
+            .build();
+        final phoneEntities = phoneQuery.find();
+        phoneQuery.close();
+
+        final contactMap = <String, ContactEntity>{};
+        for (final pe in phoneEntities) {
+          final contact = pe.contact.target;
+          if (contact != null) {
+            contactMap[pe.number] = contact;
+          }
+        }
+
+        for (final conv in conversations) {
+          conv.contact = contactMap[conv.phoneNumber];
+        }
+      }
+
+      AppLogger.d(
+        'Loaded ${conversations.length} conversations from database (filter: $filter, query: "$query").',
+      );
+      return conversations;
+    } catch (e, stack) {
+      AppLogger.e(
+        'Error loading conversations from database',
+        error: e,
+        stack: stack,
+      );
+      rethrow;
+    }
   }
 
   @override
   Future<ConversationEntity?> getConversationById(int id) async {
-    final boxService = await _getBox();
-    return boxService.store.box<ConversationEntity>().get(id);
+    try {
+      final boxService = await _getBox();
+      final conversation = boxService.store.box<ConversationEntity>().get(id);
+      if (conversation != null) {
+        conversation.contact = _getContactForPhoneNumber(
+          conversation.phoneNumber,
+        );
+        AppLogger.d('Loaded conversation by ID: $id');
+      } else {
+        AppLogger.d('Conversation with ID: $id not found.');
+      }
+      return conversation;
+    } catch (e, stack) {
+      AppLogger.e(
+        'Error loading conversation by ID: $id',
+        error: e,
+        stack: stack,
+      );
+      rethrow;
+    }
+  }
+
+  @override
+  Future<ConversationEntity> getOrCreateConversation(String phoneNumber) async {
+    try {
+      final boxService = await _getBox();
+      final conversationBox = boxService.store.box<ConversationEntity>();
+
+      final query = conversationBox
+          .query(ConversationEntity_.phoneNumber.equals(phoneNumber))
+          .build();
+      ConversationEntity? conversation = query.findFirst();
+      query.close();
+
+      if (conversation == null) {
+        AppLogger.i(
+          'Creating new ConversationEntity for phoneNumber: $phoneNumber',
+        );
+        final now = DateTime.now();
+        conversation = ConversationEntity(
+          phoneNumber: phoneNumber,
+          createdAt: now,
+          updatedAt: now,
+        );
+
+        conversationBox.put(conversation);
+        AppLogger.i('New ConversationEntity saved for: $phoneNumber');
+      } else {
+        AppLogger.d('Found existing ConversationEntity for: $phoneNumber');
+      }
+
+      conversation.contact = _getContactForPhoneNumber(phoneNumber);
+      return conversation;
+    } catch (e, stack) {
+      AppLogger.e(
+        'Error in getOrCreateConversation for: $phoneNumber',
+        error: e,
+        stack: stack,
+      );
+      rethrow;
+    }
   }
 
   @override
@@ -50,83 +245,103 @@ class MessageRepositoryImpl implements MessageRepository {
     String body,
     MessageDirection direction,
   ) async {
-    final boxService = await _getBox();
-    final conversationBox = boxService.store.box<ConversationEntity>();
+    try {
+      final boxService = await _getBox();
+      final conversationBox = boxService.store.box<ConversationEntity>();
+      final messageBox = boxService.store.box<MessageEntity>();
 
-    final query = conversationBox
-        .query(ConversationEntity_.phoneNumber.equals(phoneNumber))
-        .build();
-    ConversationEntity? conversation = query.findFirst();
-    query.close();
+      final query = conversationBox
+          .query(ConversationEntity_.phoneNumber.equals(phoneNumber))
+          .build();
+      ConversationEntity? conversation = query.findFirst();
+      query.close();
 
-    final now = DateTime.now();
-    if (conversation == null) {
-      conversation = ConversationEntity(
-        phoneNumber: phoneNumber,
+      final now = DateTime.now();
+
+      if (conversation == null) {
+        AppLogger.i(
+          'Implicitly creating new ConversationEntity inside insertMessage for: $phoneNumber',
+        );
+        conversation = ConversationEntity(
+          phoneNumber: phoneNumber,
+          createdAt: now,
+          updatedAt: now,
+        );
+      } else {
+        conversation.updatedAt = now;
+      }
+
+      conversation.contact = _getContactForPhoneNumber(phoneNumber);
+
+      final message = MessageEntity(
+        sender: direction == MessageDirection.incoming ? phoneNumber : 'me',
+        recipient: direction == MessageDirection.outgoing ? phoneNumber : 'me',
+        body: body,
+        direction: direction.index,
+        status: MessageStatus.sent.index,
         createdAt: now,
-        updatedAt: now,
       );
 
-      final phoneBox = boxService.store.box<PhoneNumberEntity>();
-      final pQuery = phoneBox
-          .query(PhoneNumberEntity_.number.equals(phoneNumber))
-          .build();
-      final phoneEntity = pQuery.findFirst();
-      pQuery.close();
+      message.conversation.target = conversation;
 
-      if (phoneEntity != null) {
-        conversation.phone.target = phoneEntity;
-      } else {
-        final contact = ContactEntity(name: phoneNumber);
-        final phone = PhoneNumberEntity(number: phoneNumber)
-          ..contact.target = contact;
-        conversation.phone.target = phone;
-      }
-    } else {
-      conversation.updatedAt = now;
+      boxService.store.runInTransaction(TxMode.write, () {
+        conversationBox.put(conversation!);
+        messageBox.put(message);
+      });
+
+      AppLogger.i('Successfully inserted message for: $phoneNumber');
+
+      return message;
+    } catch (e, stack) {
+      AppLogger.e(
+        'Error inserting message for: $phoneNumber',
+        error: e,
+        stack: stack,
+      );
+      rethrow;
     }
-
-    final sender = direction == MessageDirection.incoming ? phoneNumber : 'me';
-    final recipient = direction == MessageDirection.outgoing
-        ? phoneNumber
-        : 'me';
-
-    final message = MessageEntity(
-      sender: sender,
-      recipient: recipient,
-      body: body,
-      direction: direction.index,
-      status: MessageStatus.sent.index,
-      createdAt: now,
-    );
-
-    message.conversation.target = conversation;
-    conversation.messages.add(message);
-
-    conversationBox.put(conversation);
-
-    return message;
   }
 
   @override
   Future<void> markAllAsRead(int conversationId) async {
-    final boxService = await _getBox();
-    final conversationBox = boxService.store.box<ConversationEntity>();
-    final conversation = conversationBox.get(conversationId);
-    if (conversation == null) return;
+    try {
+      final boxService = await _getBox();
+      final messageBox = boxService.store.box<MessageEntity>();
 
-    final now = DateTime.now();
-    bool updatedAny = false;
-    for (final message in conversation.messages) {
-      if (message.readAt == null &&
-          message.messageDirection == MessageDirection.incoming) {
+      final builder = messageBox.query(
+        MessageEntity_.readAt.isNull() &
+            MessageEntity_.direction.equals(MessageDirection.incoming.index),
+      );
+
+      builder.link(
+        MessageEntity_.conversation,
+        ConversationEntity_.id.equals(conversationId),
+      );
+
+      final query = builder.build();
+      final unreadMessages = query.find();
+      query.close();
+
+      if (unreadMessages.isEmpty) return;
+
+      final now = DateTime.now();
+      for (final message in unreadMessages) {
         message.readAt = now;
-        updatedAny = true;
       }
-    }
 
-    if (updatedAny) {
-      conversationBox.put(conversation);
+      messageBox.putMany(unreadMessages);
+
+      AppLogger.i(
+        'Marked ${unreadMessages.length} messages as read '
+        'for conversation ID: $conversationId',
+      );
+    } catch (e, stack) {
+      AppLogger.e(
+        'Error marking all messages as read for ID: $conversationId',
+        error: e,
+        stack: stack,
+      );
+      rethrow;
     }
   }
 }

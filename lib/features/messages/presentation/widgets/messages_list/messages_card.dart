@@ -17,7 +17,7 @@ class MessagesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final contact = conversation.phone.target?.contact.target;
+    final contact = conversation.contact;
     final name = contact?.name ?? conversation.phoneNumber;
     final initials = getInitials(name);
 
@@ -40,7 +40,7 @@ class MessagesCard extends StatelessWidget {
             });
           },
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            padding: const EdgeInsets.all(16),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -74,10 +74,11 @@ class MessagesCard extends StatelessWidget {
                             Text(
                               _formatTime(lastMsg.createdAt),
                               style: const TextStyle(
-                                  fontSize: 16,
-                                  height: 1.20,
-                                  fontWeight: FontWeight.w300,
-                                  color: AppColors.timeLabelColor),
+                                fontSize: 16,
+                                height: 1.20,
+                                fontWeight: FontWeight.w300,
+                                color: AppColors.timeLabelColor,
+                              ),
                             ),
                           const SizedBox(width: 6),
                           Image.asset(
@@ -112,8 +113,6 @@ class MessagesCard extends StatelessWidget {
     );
   }
 
-
-
   String _formatTime(DateTime dt) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -128,5 +127,3 @@ class MessagesCard extends StatelessWidget {
     }
   }
 }
-
-
