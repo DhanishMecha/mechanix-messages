@@ -11,7 +11,7 @@ import 'package:mechanix_messages/objectbox.g.dart';
 class MessageRepositoryImpl implements MessageRepository {
   ObjectBoxService? _objectBox;
 
-  MessageRepositoryImpl();
+  MessageRepositoryImpl({ObjectBoxService? objectBox}) : _objectBox = objectBox;
 
   Future<ObjectBoxService> _getBox() async {
     try {
