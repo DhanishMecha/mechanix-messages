@@ -6,8 +6,6 @@ class ConversationEntity {
   @Id()
   int id = 0;
 
-  /// Source of truth for SMS routing.
-  /// Kept even if the contact is deleted.
   @Unique()
   String phoneNumber;
 

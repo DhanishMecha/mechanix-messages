@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mechanix_contacts/mechanix_contacts.dart';
+import 'package:mechanix_messages/core/utils/app_logger.dart';
 import 'package:mechanix_messages/core/utils/app_routes.dart';
 import 'package:mechanix_messages/core/utils/colors.dart';
 import 'package:mechanix_messages/core/utils/helpers.dart';
@@ -17,15 +18,26 @@ class ComposeContactTile extends StatelessWidget {
     BuildContext context,
     String phoneNumber,
   ) async {
-    final repository = context.read<MessageRepositoryImpl>();
-    final conversation = await repository.getOrCreateConversation(phoneNumber);
-
-    if (context.mounted) {
-      Navigator.pushReplacementNamed(
-        context,
-        AppRoutes.conversation,
-        arguments: conversation,
+    try {
+      final repository = context.read<MessageRepositoryImpl>();
+      final conversation = await repository.getOrCreateConversation(
+        phoneNumber,
       );
+
+      if (context.mounted) {
+        Navigator.pushReplacementNamed(
+          context,
+          AppRoutes.conversation,
+          arguments: conversation,
+        );
+      }
+    } catch (e, st) {
+      AppLogger.e('ComposeContactTile: failed to start conversation', error: e, stack: st);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorUnknown)),
+        );
+      }
     }
   }
 

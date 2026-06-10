@@ -49,18 +49,6 @@ class _ConversationBottomBarState extends State<ConversationBottomBar> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          // Plus Add Button
-          MessageButton(
-            iconPath: AppIcons.add,
-            onTap: () {
-              // Action for + button (e.g. attachments, photos)
-            },
-            bgColor: Colors.transparent,
-            border: Border.all(color: Colors.transparent),
-            iconColor: AppColors.titleColor,
-          ),
-          const SizedBox(width: 12),
-
           // Input field
           Expanded(
             child: Container(

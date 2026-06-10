@@ -16,7 +16,6 @@ class ComposeMessageScreen extends StatelessWidget {
           ConversationBloc(repository: context.read<MessageRepositoryImpl>())
             ..add(const LoadComposeContacts()),
       child: const Scaffold(
-        backgroundColor: Colors.black,
         appBar: ComposeMessageTopBar(),
         body: ComposeMessage(),
       ),

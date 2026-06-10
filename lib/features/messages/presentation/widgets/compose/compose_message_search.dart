@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mechanix_contacts/mechanix_contacts.dart';
+import 'package:mechanix_messages/core/utils/app_logger.dart';
 import 'package:mechanix_messages/core/utils/app_routes.dart';
 import 'package:mechanix_messages/core/utils/colors.dart';
 import 'package:mechanix_messages/core/utils/icons.dart';
@@ -48,15 +49,30 @@ class _ComposeMessageSearchState extends State<ComposeMessageSearch> {
   }
 
   Future<void> _startConversation(String phoneNumber) async {
-    final repository = context.read<MessageRepositoryImpl>();
-    final conversation = await repository.getOrCreateConversation(phoneNumber);
-
-    if (mounted) {
-      Navigator.pushReplacementNamed(
-        context,
-        AppRoutes.conversation,
-        arguments: conversation,
+    try {
+      final repository = context.read<MessageRepositoryImpl>();
+      final conversation = await repository.getOrCreateConversation(
+        phoneNumber,
       );
+
+      if (mounted) {
+        Navigator.pushReplacementNamed(
+          context,
+          AppRoutes.conversation,
+          arguments: conversation,
+        );
+      }
+    } catch (e, st) {
+      AppLogger.e(
+        'ComposeMessageSearch: failed to start conversation',
+        error: e,
+        stack: st,
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorUnknown)),
+        );
+      }
     }
   }
 

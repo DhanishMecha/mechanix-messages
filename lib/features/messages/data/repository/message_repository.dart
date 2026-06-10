@@ -1,4 +1,3 @@
-import 'package:mechanix_messages/core/utils/constants.dart';
 import 'package:mechanix_messages/core/utils/enums.dart';
 import 'package:mechanix_messages/features/messages/data/models/conversation_model.dart';
 import 'package:mechanix_messages/features/messages/data/models/message_model.dart';
@@ -6,10 +5,10 @@ import 'package:mechanix_contacts/mechanix_contacts.dart';
 
 abstract class MessageRepository {
   Future<List<ConversationEntity>> getConversations({
-    ConversationFilter filter = ConversationFilter.all,
-    String query = '',
-    int limit = Constants.pageSize,
-    int offset = 0,
+    ConversationFilter filter,
+    String query,
+    int limit,
+    int offset,
   });
 
   Future<ConversationEntity?> getConversationById(int id);
@@ -26,13 +25,13 @@ abstract class MessageRepository {
 
   Future<List<MessageEntity>> getMessagesForConversation(
     int conversationId, {
-    int limit = Constants.pageSize,
-    int offset = 0,
+    int limit,
+    int offset,
   });
 
   Future<List<ContactEntity>> getContacts({
-    String query = '',
-    int limit = Constants.pageSize,
-    int offset = 0,
+    String query,
+    int limit,
+    int offset,
   });
 }
