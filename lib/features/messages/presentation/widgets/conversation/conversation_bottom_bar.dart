@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mechanix_messages/core/utils/constants.dart';
 import 'package:mechanix_messages/l10n/app_localizations.dart';
 import 'package:mechanix_messages/core/utils/colors.dart';
 import 'package:mechanix_messages/core/utils/icons.dart';
@@ -80,19 +81,23 @@ class _ConversationBottomBarState extends State<ConversationBottomBar> {
                       maxLines: null,
                       minLines: 1,
                       keyboardType: TextInputType.multiline,
+                      maxLength: Constants.maxMessageLength,
                       style: const TextStyle(
                         fontSize: 16,
                         color: AppColors.titleColor,
                       ),
                       decoration: InputDecoration(
                         hintText: l10n.writeMessage,
+                        counter: const SizedBox.shrink(),
                         hintStyle: const TextStyle(
                           fontSize: 14,
                           color: AppColors.placeholderColor,
                         ),
                         border: InputBorder.none,
                         isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 10,
+                        ),
                       ),
                     ),
                   ),
