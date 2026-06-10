@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mechanix_messages/l10n/app_localizations.dart';
 import 'package:mechanix_messages/core/utils/app_routes.dart';
 import 'package:mechanix_messages/core/widgets/avatar.dart';
 import 'package:mechanix_messages/core/utils/colors.dart';
@@ -28,6 +29,7 @@ class MessagesCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final contact = conversation.contact;
     final name = contact?.name ?? conversation.phoneNumber;
     final initials = getInitials(name);
@@ -72,7 +74,7 @@ class MessagesCard extends StatelessWidget {
                           const SizedBox(width: 8),
                           if (lastMsg != null)
                             Text(
-                              formatTime(lastMsg.createdAt),
+                              formatTime(lastMsg.createdAt, l10n),
                               style: const TextStyle(
                                 fontSize: 16,
                                 height: 1.20,

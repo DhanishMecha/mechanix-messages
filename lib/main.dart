@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mechanix_messages/l10n/app_localizations.dart';
 import 'package:mechanix_messages/core/utils/app_routes.dart';
 import 'package:mechanix_messages/core/utils/theme.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_bloc.dart';
@@ -54,6 +55,8 @@ class MessagesApp extends StatelessWidget {
       darkTheme: AppTheme.dark,
       theme: AppTheme.light,
       locale: const Locale('en'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       home: const MessagesScreen(),
       routes: {
         AppRoutes.conversation: (context) => const ConversationScreen(),

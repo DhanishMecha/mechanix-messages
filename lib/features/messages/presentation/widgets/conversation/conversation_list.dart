@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mechanix_messages/l10n/app_localizations.dart';
 import 'package:mechanix_messages/core/utils/colors.dart';
 import 'package:mechanix_messages/core/utils/helpers.dart';
 import 'package:mechanix_messages/core/utils/enums.dart';
@@ -106,10 +107,11 @@ class _DateHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 24.0),
       child: Text(
-        formatDateHeader(dateTime),
+        formatDateHeader(dateTime, l10n),
         textAlign: TextAlign.center,
         style: const TextStyle(
           color: AppColors.timeLabelColor,

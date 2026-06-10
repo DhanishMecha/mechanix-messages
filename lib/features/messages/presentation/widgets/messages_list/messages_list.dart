@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mechanix_messages/l10n/app_localizations.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_bloc.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_event.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_state.dart';
@@ -70,10 +71,10 @@ class _MessagesListState extends State<MessagesList> {
           final isLoadingMore = state.isLoadingMore;
 
           if (conversations.isEmpty) {
-            return const Center(
+            return Center(
               child: Text(
-                'No messages',
-                style: TextStyle(color: Colors.white38, fontSize: 14),
+                AppLocalizations.of(context)!.noMessages,
+                style: const TextStyle(color: Colors.white38, fontSize: 14),
               ),
             );
           }

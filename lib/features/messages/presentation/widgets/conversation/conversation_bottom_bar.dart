@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mechanix_messages/l10n/app_localizations.dart';
 import 'package:mechanix_messages/core/utils/colors.dart';
 import 'package:mechanix_messages/core/utils/icons.dart';
 import 'package:mechanix_messages/core/utils/message_button.dart';
@@ -35,6 +36,7 @@ class _ConversationBottomBarState extends State<ConversationBottomBar> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       color: Colors.transparent,
       padding: EdgeInsets.only(
@@ -82,15 +84,15 @@ class _ConversationBottomBarState extends State<ConversationBottomBar> {
                         fontSize: 16,
                         color: AppColors.titleColor,
                       ),
-                      decoration: const InputDecoration(
-                        hintText: 'Write a message...',
-                        hintStyle: TextStyle(
+                      decoration: InputDecoration(
+                        hintText: l10n.writeMessage,
+                        hintStyle: const TextStyle(
                           fontSize: 14,
                           color: AppColors.placeholderColor,
                         ),
                         border: InputBorder.none,
                         isDense: true,
-                        contentPadding: EdgeInsets.symmetric(vertical: 10),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 10),
                       ),
                     ),
                   ),

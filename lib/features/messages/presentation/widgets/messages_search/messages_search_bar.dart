@@ -7,6 +7,7 @@ import 'package:mechanix_messages/core/utils/icons.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_bloc.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_event.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_state.dart';
+import 'package:mechanix_messages/l10n/app_localizations.dart';
 
 class MessagesSearchBar extends StatefulWidget {
   const MessagesSearchBar({super.key});
@@ -43,6 +44,7 @@ class _MessagesSearchBarState extends State<MessagesSearchBar> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       height: 48,
       decoration: BoxDecoration(
@@ -64,9 +66,9 @@ class _MessagesSearchBarState extends State<MessagesSearchBar> {
             child: TextField(
               controller: _controller,
               style: const TextStyle(fontSize: 20, color: AppColors.titleColor),
-              decoration: const InputDecoration(
-                hintText: 'Search in messages',
-                hintStyle: TextStyle(
+              decoration: InputDecoration(
+                hintText: l10n.searchInMessages,
+                hintStyle: const TextStyle(
                   fontSize: 16,
                   color: AppColors.placeholderColor,
                 ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mechanix_messages/l10n/app_localizations.dart';
 import 'package:mechanix_contacts/mechanix_contacts.dart';
 import 'package:mechanix_messages/core/utils/app_routes.dart';
 import 'package:mechanix_messages/core/utils/colors.dart';
@@ -82,6 +83,7 @@ class _SelectContactScreenState extends State<SelectContactScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final showDirectSend =
         _searchQuery.isNotEmpty &&
         !_filteredContacts.any(
@@ -101,9 +103,9 @@ class _SelectContactScreenState extends State<SelectContactScreen> {
           ),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'New message',
-          style: TextStyle(
+        title: Text(
+          l10n.newMessage,
+          style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w400,
             color: AppColors.titleColor,
@@ -132,9 +134,9 @@ class _SelectContactScreenState extends State<SelectContactScreen> {
                     height: 24,
                     child: Center(
                       child: _searchQuery.isEmpty
-                          ? const Text(
-                              'To: ',
-                              style: TextStyle(
+                          ? Text(
+                              l10n.toLabel,
+                              style: const TextStyle(
                                 fontSize: 16,
                                 color: AppColors.placeholderColor,
                                 fontWeight: FontWeight.w400,
@@ -157,9 +159,9 @@ class _SelectContactScreenState extends State<SelectContactScreen> {
                         fontSize: 16,
                         color: AppColors.titleColor,
                       ),
-                      decoration: const InputDecoration(
-                        hintText: 'Search or enter phone number',
-                        hintStyle: TextStyle(
+                      decoration: InputDecoration(
+                        hintText: l10n.searchOrEnterPhone,
+                        hintStyle: const TextStyle(
                           fontSize: 14,
                           color: AppColors.placeholderColor,
                         ),
@@ -216,7 +218,7 @@ class _SelectContactScreenState extends State<SelectContactScreen> {
             ListTile(
               leading: const Avatar(initials: '#'),
               title: Text(
-                'Send message to $_searchQuery',
+                l10n.sendMessageTo(_searchQuery),
                 style: const TextStyle(
                   color: AppColors.titleColor,
                   fontSize: 18,
@@ -233,8 +235,8 @@ class _SelectContactScreenState extends State<SelectContactScreen> {
                 ? Center(
                     child: Text(
                       _searchQuery.isEmpty
-                          ? 'No contacts found'
-                          : 'No matching contacts',
+                          ? l10n.noContactsFound
+                          : l10n.noMatchingContacts,
                       style: const TextStyle(
                         color: AppColors.placeholderColor,
                         fontSize: 16,
@@ -253,7 +255,7 @@ class _SelectContactScreenState extends State<SelectContactScreen> {
                       // Get first phone number or fallback
                       final phoneNumber = contact.phoneNumbers.isNotEmpty
                           ? contact.phoneNumbers.first.number
-                          : 'No number';
+                          : l10n.noNumber;
 
                       return ListTile(
                         contentPadding: const EdgeInsets.symmetric(

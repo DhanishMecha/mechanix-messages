@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mechanix_messages/l10n/app_localizations.dart';
 import 'package:mechanix_messages/core/utils/colors.dart';
 import 'package:mechanix_messages/core/utils/enums.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_event.dart';
@@ -11,6 +12,7 @@ class MessagesTopbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocBuilder<MessagesBloc, MessagesState>(
       buildWhen: (prev, curr) => curr is MessagesLoaded,
       builder: (context, state) {
@@ -21,9 +23,9 @@ class MessagesTopbar extends StatelessWidget {
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'All messages',
-              style: TextStyle(
+            Text(
+              l10n.allMessages,
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.w300,
                 color: AppColors.titleColor,
@@ -45,6 +47,7 @@ class _FilterToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       height: 36,
       decoration: BoxDecoration(
@@ -55,14 +58,14 @@ class _FilterToggle extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           _Tab(
-            label: 'All',
+            label: l10n.filterAll,
             isActive: current == ConversationFilter.all,
             onTap: () => context.read<MessagesBloc>().add(
               const FilterConversations(ConversationFilter.all),
             ),
           ),
           _Tab(
-            label: 'Unread',
+            label: l10n.filterUnread,
             isActive: current == ConversationFilter.unread,
             onTap: () => context.read<MessagesBloc>().add(
               const FilterConversations(ConversationFilter.unread),
