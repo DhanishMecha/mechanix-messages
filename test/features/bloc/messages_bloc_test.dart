@@ -6,7 +6,7 @@ import 'package:mechanix_messages/core/utils/enums.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_bloc.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_event.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_state.dart';
-import 'package:mechanix_messages/features/messages/data/models/conversation_model.dart';
+import 'package:mechanix_messages/features/messages/data/models/conversation_entity.dart';
 import 'package:mechanix_messages/features/messages/data/repository/message_repository.dart';
 
 class MockMessageRepository extends Mock implements MessageRepository {}

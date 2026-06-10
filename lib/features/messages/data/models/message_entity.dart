@@ -1,5 +1,5 @@
 import 'package:mechanix_messages/core/utils/enums.dart';
-import 'package:mechanix_messages/features/messages/data/models/conversation_model.dart';
+import 'package:mechanix_messages/features/messages/data/models/conversation_entity.dart';
 import 'package:objectbox/objectbox.dart';
 
 @Entity()

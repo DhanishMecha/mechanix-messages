@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mechanix_messages/core/utils/colors.dart';
-import 'package:mechanix_messages/features/messages/data/models/message_model.dart';
+import 'package:mechanix_messages/features/messages/data/models/message_entity.dart';
 
 class MessageBubble extends StatefulWidget {
   final MessageEntity message;

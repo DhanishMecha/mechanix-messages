@@ -13,8 +13,8 @@ import 'package:objectbox/internal.dart'
     as obx_int; // generated code can access "internal" functionality
 import 'package:objectbox/objectbox.dart' as obx;
 
-import 'features/messages/data/models/conversation_model.dart';
-import 'features/messages/data/models/message_model.dart';
+import 'features/messages/data/models/conversation_entity.dart';
+import 'features/messages/data/models/message_entity.dart';
 
 export 'package:objectbox/objectbox.dart'; // so that callers only have to import this file
 

@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:mechanix_messages/core/utils/enums.dart';
-import 'package:mechanix_messages/features/messages/data/models/conversation_model.dart';
-import 'package:mechanix_messages/features/messages/data/models/message_model.dart';
+import 'package:mechanix_messages/features/messages/data/models/conversation_entity.dart';
+import 'package:mechanix_messages/features/messages/data/models/message_entity.dart';
 import 'package:mechanix_contacts/mechanix_contacts.dart';
 
 abstract class ConversationState extends Equatable {

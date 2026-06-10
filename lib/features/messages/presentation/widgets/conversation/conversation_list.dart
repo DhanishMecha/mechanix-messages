@@ -7,7 +7,7 @@ import 'package:mechanix_messages/core/utils/enums.dart';
 import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_bloc.dart';
 import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_event.dart';
 import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_state.dart';
-import 'package:mechanix_messages/features/messages/data/models/message_model.dart';
+import 'package:mechanix_messages/features/messages/data/models/message_entity.dart';
 import 'package:mechanix_messages/features/messages/presentation/widgets/conversation/message_bubble.dart';
 
 class ConversationList extends StatefulWidget {

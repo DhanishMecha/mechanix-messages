@@ -3,7 +3,7 @@ import 'package:mechanix_messages/core/widgets/avatar.dart';
 import 'package:mechanix_messages/core/utils/colors.dart';
 import 'package:mechanix_messages/core/utils/helpers.dart';
 import 'package:mechanix_messages/core/utils/icons.dart';
-import 'package:mechanix_messages/features/messages/data/models/conversation_model.dart';
+import 'package:mechanix_messages/features/messages/data/models/conversation_entity.dart';
 
 class ConversationTopBar extends StatelessWidget
     implements PreferredSizeWidget {

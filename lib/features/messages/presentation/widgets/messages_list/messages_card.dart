@@ -8,7 +8,7 @@ import 'package:mechanix_messages/core/utils/helpers.dart';
 import 'package:mechanix_messages/core/utils/icons.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_bloc.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_event.dart';
-import 'package:mechanix_messages/features/messages/data/models/conversation_model.dart';
+import 'package:mechanix_messages/features/messages/data/models/conversation_entity.dart';
 
 class MessagesCard extends StatelessWidget {
   final ConversationEntity conversation;

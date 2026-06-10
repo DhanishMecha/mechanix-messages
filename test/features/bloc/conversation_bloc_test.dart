@@ -6,8 +6,8 @@ import 'package:mechanix_messages/core/utils/enums.dart';
 import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_bloc.dart';
 import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_event.dart';
 import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_state.dart';
-import 'package:mechanix_messages/features/messages/data/models/conversation_model.dart';
-import 'package:mechanix_messages/features/messages/data/models/message_model.dart';
+import 'package:mechanix_messages/features/messages/data/models/conversation_entity.dart';
+import 'package:mechanix_messages/features/messages/data/models/message_entity.dart';
 import 'package:mechanix_messages/features/messages/data/repository/message_repository.dart';
 import 'package:mechanix_contacts/mechanix_contacts.dart';
 

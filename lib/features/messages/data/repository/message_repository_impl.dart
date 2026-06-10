@@ -2,8 +2,8 @@ import 'package:mechanix_messages/core/services/objectbox_service.dart';
 import 'package:mechanix_messages/core/utils/constants.dart';
 import 'package:mechanix_messages/core/utils/enums.dart';
 import 'package:mechanix_messages/core/utils/app_logger.dart';
-import 'package:mechanix_messages/features/messages/data/models/conversation_model.dart';
-import 'package:mechanix_messages/features/messages/data/models/message_model.dart';
+import 'package:mechanix_messages/features/messages/data/models/conversation_entity.dart';
+import 'package:mechanix_messages/features/messages/data/models/message_entity.dart';
 import 'package:mechanix_messages/features/messages/data/repository/message_repository.dart';
 import 'package:mechanix_contacts/mechanix_contacts.dart';
 import 'package:mechanix_messages/objectbox.g.dart';
@@ -438,25 +438,27 @@ class MessageRepositoryImpl implements MessageRepository {
     int offset = 0,
   }) async {
     try {
-      await _getBox(); // Ensure connection is initialized
+      await _getBox();
       final contactBox = ContactsStoreService.contacts;
 
       Condition<ContactEntity>? cond;
       if (query.isNotEmpty) {
-        // Query phone numbers matching query first to find associated contacts
+        // @Backlink relations don't support .link() in a condition chain.
+        // QueryBuilder.linkMany() exists but is AND-only, so we still need
+        // a phone pre-query to build the OR condition.
         final phoneBox = ContactsStoreService.phoneNumbers;
-        final phoneQuery = phoneBox
+        final phoneQ = phoneBox
             .query(
               PhoneNumberEntity_.number.contains(query, caseSensitive: false),
             )
             .build();
-        final matchingPhones = phoneQuery.find();
-        phoneQuery.close();
-
-        final matchingContactIds = matchingPhones
+        final matchingContactIds = phoneQ
+            .find()
             .map((p) => p.contact.targetId)
             .where((id) => id != 0)
+            .toSet() // deduplicate — multiple phones on same contact
             .toList();
+        phoneQ.close();
 
         cond = ContactEntity_.name.contains(query, caseSensitive: false);
         if (matchingContactIds.isNotEmpty) {
@@ -464,19 +466,34 @@ class MessageRepositoryImpl implements MessageRepository {
         }
       }
 
-      final queryBuilder = contactBox.query(cond)..order(ContactEntity_.name);
-
-      final q = queryBuilder.build()
-        ..limit = limit
-        ..offset = offset;
-
+      // Single contact query with DB-level ordering
+      final q = (contactBox.query(cond)..order(ContactEntity_.name)).build();
       final contacts = q.find();
       q.close();
 
+      final expanded = <ContactEntity>[];
+      for (final contact in contacts) {
+        if (contact.phoneNumbers.isEmpty) {
+          expanded.add(contact);
+        } else {
+          for (final phone in contact.phoneNumbers) {
+            expanded.add(
+              ContactEntity(name: contact.name, favorite: contact.favorite)
+                ..id = contact.id
+                ..phoneNumbers.add(phone)
+                ..emails.addAll(contact.emails),
+            );
+          }
+        }
+      }
+
+      if (offset >= expanded.length) return [];
+      final end = (offset + limit).clamp(0, expanded.length);
+
       AppLogger.d(
-        'Loaded ${contacts.length} contacts (limit: $limit, offset: $offset, query: "$query")',
+        'Loaded ${end - offset} contacts (limit: $limit, offset: $offset, query: "$query")',
       );
-      return contacts;
+      return expanded.sublist(offset, end);
     } catch (e, stack) {
       AppLogger.e(
         'Error loading contacts from database',
