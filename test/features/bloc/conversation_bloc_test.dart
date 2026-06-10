@@ -9,6 +9,7 @@ import 'package:mechanix_messages/features/messages/bloc/conversation/conversati
 import 'package:mechanix_messages/features/messages/data/models/conversation_model.dart';
 import 'package:mechanix_messages/features/messages/data/models/message_model.dart';
 import 'package:mechanix_messages/features/messages/data/repository/message_repository.dart';
+import 'package:mechanix_contacts/mechanix_contacts.dart';
 
 class MockMessageRepository extends Mock implements MessageRepository {}
 
@@ -17,6 +18,7 @@ void main() {
   late ConversationBloc conversationBloc;
   late ConversationEntity tConversation;
   late MessageEntity tMessage;
+  late List<ContactEntity> tContacts;
 
   setUpAll(() {
     registerFallbackValue(MessageDirection.incoming);
@@ -33,6 +35,10 @@ void main() {
       direction: MessageDirection.incoming.index,
       status: MessageStatus.delivered.index,
     )..id = 100;
+    tContacts = [
+      ContactEntity(name: 'Alice')..id = 1,
+      ContactEntity(name: 'Bob')..id = 2,
+    ];
   });
 
   tearDown(() {
@@ -364,6 +370,252 @@ void main() {
       expect: () => [
         const ConversationError('Exception: Insert failure'),
       ],
+    );
+  });
+
+  group('LoadComposeContacts', () {
+    blocTest<ConversationBloc, ConversationState>(
+      'emits [ComposeContactsLoading, ComposeContactsLoaded] on success',
+      build: () {
+        when(
+          () => mockRepository.getContacts(
+            query: any(named: 'query'),
+            limit: any(named: 'limit'),
+            offset: any(named: 'offset'),
+          ),
+        ).thenAnswer((_) async => tContacts);
+        return conversationBloc;
+      },
+      act: (bloc) => bloc.add(const LoadComposeContacts()),
+      expect: () => [
+        const ComposeContactsLoading(),
+        ComposeContactsLoaded(
+          contacts: tContacts,
+          searchQuery: '',
+          hasMore: false,
+          isLoadingMore: false,
+        ),
+      ],
+      verify: (_) {
+        verify(
+          () => mockRepository.getContacts(
+            query: '',
+            limit: Constants.pageSize,
+            offset: 0,
+          ),
+        ).called(1);
+      },
+    );
+
+    blocTest<ConversationBloc, ConversationState>(
+      'emits [ComposeContactsLoading, ComposeContactsError] on failure',
+      build: () {
+        when(
+          () => mockRepository.getContacts(
+            query: any(named: 'query'),
+            limit: any(named: 'limit'),
+            offset: any(named: 'offset'),
+          ),
+        ).thenThrow(Exception('Database error'));
+        return conversationBloc;
+      },
+      act: (bloc) => bloc.add(const LoadComposeContacts()),
+      expect: () => [
+        const ComposeContactsLoading(),
+        const ComposeContactsError('Exception: Database error'),
+      ],
+    );
+  });
+
+  group('LoadComposeContacts with query', () {
+    blocTest<ConversationBloc, ConversationState>(
+      'emits [ComposeContactsLoading, ComposeContactsLoaded] with query search results',
+      build: () {
+        when(
+          () => mockRepository.getContacts(
+            query: any(named: 'query'),
+            limit: any(named: 'limit'),
+            offset: any(named: 'offset'),
+          ),
+        ).thenAnswer((_) async => [tContacts[0]]);
+        return conversationBloc;
+      },
+      act: (bloc) => bloc.add(const LoadComposeContacts(query: 'Ali')),
+      expect: () => [
+        const ComposeContactsLoading(),
+        ComposeContactsLoaded(
+          contacts: [tContacts[0]],
+          searchQuery: 'Ali',
+          hasMore: false,
+          isLoadingMore: false,
+        ),
+      ],
+      verify: (_) {
+        verify(
+          () => mockRepository.getContacts(
+            query: 'Ali',
+            limit: Constants.pageSize,
+            offset: 0,
+          ),
+        ).called(1);
+      },
+    );
+  });
+
+  group('LoadMoreComposeContacts', () {
+    final tContactsPage1 = List.generate(
+      Constants.pageSize,
+      (i) => ContactEntity(name: 'Contact $i')..id = i + 1,
+    );
+    final tContactsPage2 = [
+      ContactEntity(name: 'Contact Last')..id = 999,
+    ];
+
+    blocTest<ConversationBloc, ConversationState>(
+      'does not fetch more if state is not ComposeContactsLoaded',
+      build: () => conversationBloc,
+      act: (bloc) => bloc.add(const LoadMoreComposeContacts()),
+      expect: () => [],
+      verify: (_) {
+        verifyNever(
+          () => mockRepository.getContacts(
+            query: any(named: 'query'),
+            limit: any(named: 'limit'),
+            offset: any(named: 'offset'),
+          ),
+        );
+      },
+    );
+
+    blocTest<ConversationBloc, ConversationState>(
+      'does not fetch more if hasMore is false',
+      build: () {
+        when(
+          () => mockRepository.getContacts(
+            query: any(named: 'query'),
+            limit: any(named: 'limit'),
+            offset: any(named: 'offset'),
+          ),
+        ).thenAnswer((_) async => tContacts);
+        return conversationBloc;
+      },
+      act: (bloc) async {
+        bloc.add(const LoadComposeContacts());
+        await bloc.stream.firstWhere((s) => s is ComposeContactsLoaded);
+        bloc.add(const LoadMoreComposeContacts());
+      },
+      expect: () => [
+        const ComposeContactsLoading(),
+        ComposeContactsLoaded(
+          contacts: tContacts,
+          searchQuery: '',
+          hasMore: false,
+          isLoadingMore: false,
+        ),
+      ],
+      verify: (_) {
+        verify(
+          () => mockRepository.getContacts(
+            query: '',
+            limit: Constants.pageSize,
+            offset: 0,
+          ),
+        ).called(1);
+        verifyNever(
+          () => mockRepository.getContacts(
+            query: any(named: 'query'),
+            limit: any(named: 'limit'),
+            offset: 2,
+          ),
+        );
+      },
+    );
+
+    blocTest<ConversationBloc, ConversationState>(
+      'does not fetch more if isLoadingMore is true',
+      build: () => conversationBloc,
+      seed: () => ComposeContactsLoaded(
+        contacts: tContacts,
+        searchQuery: '',
+        hasMore: true,
+        isLoadingMore: true,
+      ),
+      act: (bloc) => bloc.add(const LoadMoreComposeContacts()),
+      expect: () => [],
+      verify: (_) {
+        verifyNever(
+          () => mockRepository.getContacts(
+            query: any(named: 'query'),
+            limit: any(named: 'limit'),
+            offset: any(named: 'offset'),
+          ),
+        );
+      },
+    );
+
+    blocTest<ConversationBloc, ConversationState>(
+      'fetches and appends next page of contacts when hasMore is true',
+      build: () {
+        when(
+          () => mockRepository.getContacts(
+            query: any(named: 'query'),
+            limit: any(named: 'limit'),
+            offset: 0,
+          ),
+        ).thenAnswer((_) async => tContactsPage1);
+
+        when(
+          () => mockRepository.getContacts(
+            query: any(named: 'query'),
+            limit: any(named: 'limit'),
+            offset: Constants.pageSize,
+          ),
+        ).thenAnswer((_) async => tContactsPage2);
+
+        return conversationBloc;
+      },
+      act: (bloc) async {
+        bloc.add(const LoadComposeContacts());
+        await bloc.stream.firstWhere((s) => s is ComposeContactsLoaded);
+        bloc.add(const LoadMoreComposeContacts());
+      },
+      expect: () => [
+        const ComposeContactsLoading(),
+        ComposeContactsLoaded(
+          contacts: tContactsPage1,
+          searchQuery: '',
+          hasMore: true,
+          isLoadingMore: false,
+        ),
+        ComposeContactsLoaded(
+          contacts: tContactsPage1,
+          searchQuery: '',
+          hasMore: true,
+          isLoadingMore: true,
+        ),
+        ComposeContactsLoaded(
+          contacts: [...tContactsPage1, ...tContactsPage2],
+          searchQuery: '',
+          hasMore: false,
+          isLoadingMore: false,
+        ),
+      ],
+      verify: (_) {
+        verify(
+          () => mockRepository.getContacts(
+            query: '',
+            limit: Constants.pageSize,
+            offset: 0,
+          ),
+        ).called(1);
+        verify(
+          () => mockRepository.getContacts(
+            query: '',
+            limit: Constants.pageSize,
+            offset: Constants.pageSize,
+          ),
+        ).called(1);
+      },
     );
   });
 }

@@ -28,3 +28,16 @@ class SendMessage extends ConversationEvent {
 class LoadMoreMessages extends ConversationEvent {
   const LoadMoreMessages();
 }
+
+class LoadComposeContacts extends ConversationEvent {
+  final String query;
+
+  const LoadComposeContacts({this.query = ''});
+
+  @override
+  List<Object?> get props => [query];
+}
+
+class LoadMoreComposeContacts extends ConversationEvent {
+  const LoadMoreComposeContacts();
+}

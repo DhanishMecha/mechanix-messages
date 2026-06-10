@@ -15,6 +15,8 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     on<LoadConversation>(_onLoadConversation);
     on<LoadMoreMessages>(_onLoadMoreMessages);
     on<SendMessage>(_onSendMessage);
+    on<LoadComposeContacts>(_onLoadComposeContacts);
+    on<LoadMoreComposeContacts>(_onLoadMoreComposeContacts);
   }
 
   Future<void> _onLoadConversation(
@@ -102,6 +104,75 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
       emit(current.copyWith(messages: updatedMessages));
     } catch (e) {
       emit(ConversationError(e.toString()));
+    }
+  }
+
+  Future<void> _onLoadComposeContacts(
+    LoadComposeContacts event,
+    Emitter<ConversationState> emit,
+  ) async {
+    await _fetchAndEmitComposeContacts(
+      query: event.query,
+      emit: emit,
+      showLoading: true,
+    );
+  }
+
+  Future<void> _onLoadMoreComposeContacts(
+    LoadMoreComposeContacts event,
+    Emitter<ConversationState> emit,
+  ) async {
+    final current = state;
+    if (current is! ComposeContactsLoaded ||
+        current.isLoadingMore ||
+        !current.hasMore) {
+      return;
+    }
+
+    emit(current.copyWith(isLoadingMore: true));
+    try {
+      final newPage = await _repository.getContacts(
+        query: current.searchQuery,
+        limit: Constants.pageSize,
+        offset: current.contacts.length,
+      );
+
+      emit(
+        current.copyWith(
+          contacts: [...current.contacts, ...newPage],
+          isLoadingMore: false,
+          hasMore: newPage.length == Constants.pageSize,
+        ),
+      );
+    } catch (e) {
+      emit(current.copyWith(isLoadingMore: false));
+    }
+  }
+
+  Future<void> _fetchAndEmitComposeContacts({
+    required String query,
+    required Emitter<ConversationState> emit,
+    required bool showLoading,
+  }) async {
+    if (showLoading) {
+      emit(const ComposeContactsLoading());
+    }
+    try {
+      final contactsList = await _repository.getContacts(
+        query: query,
+        limit: Constants.pageSize,
+        offset: 0,
+      );
+      emit(
+        ComposeContactsLoaded(
+          contacts: contactsList,
+          searchQuery: query,
+          hasMore: contactsList.length == Constants.pageSize,
+          isLoadingMore: false,
+        ),
+      );
+    } catch (e) {
+      emit(ComposeContactsError(e.toString()));
     }
   }
 }

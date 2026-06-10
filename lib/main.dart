@@ -10,7 +10,7 @@ import 'package:mechanix_messages/features/messages/bloc/messages/messages_event
 import 'package:mechanix_messages/features/messages/data/repository/message_repository_impl.dart';
 import 'package:mechanix_messages/features/messages/presentation/screens/conversation_screen.dart';
 import 'package:mechanix_messages/features/messages/presentation/screens/messages_screen.dart';
-import 'package:mechanix_messages/features/messages/presentation/screens/select_contact_screen.dart';
+import 'package:mechanix_messages/features/messages/presentation/screens/compose_message_screen.dart';
 import 'package:show_fps/show_fps.dart';
 
 void main() {
@@ -60,7 +60,7 @@ class MessagesApp extends StatelessWidget {
       home: const MessagesScreen(),
       routes: {
         AppRoutes.conversation: (context) => const ConversationScreen(),
-        AppRoutes.selectContact: (context) => const SelectContactScreen(),
+        AppRoutes.compose: (context) => const ComposeMessageScreen(),
       },
     );
   }

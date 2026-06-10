@@ -430,4 +430,60 @@ class MessageRepositoryImpl implements MessageRepository {
       return [];
     }
   }
+
+  @override
+  Future<List<ContactEntity>> getContacts({
+    String query = '',
+    int limit = Constants.pageSize,
+    int offset = 0,
+  }) async {
+    try {
+      await _getBox(); // Ensure connection is initialized
+      final contactBox = ContactsStoreService.contacts;
+
+      Condition<ContactEntity>? cond;
+      if (query.isNotEmpty) {
+        // Query phone numbers matching query first to find associated contacts
+        final phoneBox = ContactsStoreService.phoneNumbers;
+        final phoneQuery = phoneBox
+            .query(
+              PhoneNumberEntity_.number.contains(query, caseSensitive: false),
+            )
+            .build();
+        final matchingPhones = phoneQuery.find();
+        phoneQuery.close();
+
+        final matchingContactIds = matchingPhones
+            .map((p) => p.contact.targetId)
+            .where((id) => id != 0)
+            .toList();
+
+        cond = ContactEntity_.name.contains(query, caseSensitive: false);
+        if (matchingContactIds.isNotEmpty) {
+          cond = cond.or(ContactEntity_.id.oneOf(matchingContactIds));
+        }
+      }
+
+      final queryBuilder = contactBox.query(cond)..order(ContactEntity_.name);
+
+      final q = queryBuilder.build()
+        ..limit = limit
+        ..offset = offset;
+
+      final contacts = q.find();
+      q.close();
+
+      AppLogger.d(
+        'Loaded ${contacts.length} contacts (limit: $limit, offset: $offset, query: "$query")',
+      );
+      return contacts;
+    } catch (e, stack) {
+      AppLogger.e(
+        'Error loading contacts from database',
+        error: e,
+        stack: stack,
+      );
+      return [];
+    }
+  }
 }

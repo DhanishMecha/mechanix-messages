@@ -715,4 +715,80 @@ void main() {
       expect(messages, isEmpty);
     });
   });
+
+  group('getContacts', () {
+    test('returns contacts sorted alphabetically by name', () async {
+      final contactBox = contactsStore.box<ContactEntity>();
+      final c1 = ContactEntity(name: 'Charlie');
+      final c2 = ContactEntity(name: 'Alice');
+      final c3 = ContactEntity(name: 'Bob');
+      contactBox.putMany([c1, c2, c3]);
+
+      final contacts = await repository.getContacts();
+
+      expect(contacts.length, 3);
+      expect(contacts[0].name, 'Alice');
+      expect(contacts[1].name, 'Bob');
+      expect(contacts[2].name, 'Charlie');
+    });
+
+    test('respects limit and offset paging parameters', () async {
+      final contactBox = contactsStore.box<ContactEntity>();
+      final contacts = List.generate(
+        5,
+        (i) => ContactEntity(name: 'Contact ${String.fromCharCode(65 + i)}'), // A, B, C, D, E
+      );
+      contactBox.putMany(contacts);
+
+      final page = await repository.getContacts(limit: 2, offset: 1);
+
+      expect(page.length, 2);
+      expect(page[0].name, 'Contact B');
+      expect(page[1].name, 'Contact C');
+    });
+
+    test('filters by query matching contact name case-insensitively', () async {
+      final contactBox = contactsStore.box<ContactEntity>();
+      final c1 = ContactEntity(name: 'John Doe');
+      final c2 = ContactEntity(name: 'Jane Smith');
+      final c3 = ContactEntity(name: 'Johnny Cooper');
+      contactBox.putMany([c1, c2, c3]);
+
+      final results = await repository.getContacts(query: 'john');
+
+      expect(results.length, 2);
+      expect(results[0].name, 'John Doe');
+      expect(results[1].name, 'Johnny Cooper');
+    });
+
+    test('filters by query matching contact phone number case-insensitively', () async {
+      final contactBox = contactsStore.box<ContactEntity>();
+      final phoneBox = contactsStore.box<PhoneNumberEntity>();
+
+      final c1 = ContactEntity(name: 'Alice');
+      final c2 = ContactEntity(name: 'Bob');
+      contactBox.putMany([c1, c2]);
+
+      final p1 = PhoneNumberEntity(number: '+123456');
+      p1.contact.target = c1;
+
+      final p2 = PhoneNumberEntity(number: '+987654');
+      p2.contact.target = c2;
+
+      phoneBox.putMany([p1, p2]);
+
+      final results = await repository.getContacts(query: '1234');
+
+      expect(results.length, 1);
+      expect(results.first.name, 'Alice');
+    });
+
+    test('returns empty list [] when database fails', () async {
+      // Temporarily set the store to null/closed to trigger exception
+      ContactsStoreService.storeForTesting = null;
+
+      final results = await repository.getContacts();
+      expect(results, isEmpty);
+    });
+  });
 }

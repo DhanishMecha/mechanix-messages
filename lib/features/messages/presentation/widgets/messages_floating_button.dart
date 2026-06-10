@@ -15,7 +15,7 @@ class MessagesFloatingButton extends StatelessWidget {
     return MessageButton(
       iconPath: AppIcons.edit,
       onTap: () {
-        Navigator.pushNamed(context, AppRoutes.selectContact).then((_) {
+        Navigator.pushNamed(context, AppRoutes.compose).then((_) {
           if (context.mounted) {
             context.read<MessagesBloc>().add(const LoadConversations());
           }

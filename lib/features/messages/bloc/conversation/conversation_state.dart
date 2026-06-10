@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:mechanix_messages/features/messages/data/models/conversation_model.dart';
 import 'package:mechanix_messages/features/messages/data/models/message_model.dart';
+import 'package:mechanix_contacts/mechanix_contacts.dart';
 
 abstract class ConversationState extends Equatable {
   const ConversationState();
@@ -52,6 +53,53 @@ class ConversationError extends ConversationState {
   final String message;
 
   const ConversationError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class ComposeContactsLoading extends ConversationState {
+  const ComposeContactsLoading();
+}
+
+class ComposeContactsLoaded extends ConversationState {
+  final List<ContactEntity> contacts;
+
+  final String searchQuery;
+
+  final bool hasMore;
+
+  final bool isLoadingMore;
+
+  const ComposeContactsLoaded({
+    required this.contacts,
+    this.searchQuery = '',
+    this.hasMore = false,
+    this.isLoadingMore = false,
+  });
+
+  ComposeContactsLoaded copyWith({
+    List<ContactEntity>? contacts,
+    String? searchQuery,
+    bool? hasMore,
+    bool? isLoadingMore,
+  }) {
+    return ComposeContactsLoaded(
+      contacts: contacts ?? this.contacts,
+      searchQuery: searchQuery ?? this.searchQuery,
+      hasMore: hasMore ?? this.hasMore,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+    );
+  }
+
+  @override
+  List<Object?> get props => [contacts, searchQuery, hasMore, isLoadingMore];
+}
+
+class ComposeContactsError extends ConversationState {
+  final String message;
+
+  const ComposeContactsError(this.message);
 
   @override
   List<Object?> get props => [message];
