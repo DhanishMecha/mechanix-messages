@@ -64,10 +64,10 @@ class MessagesLoaded extends MessagesState {
 }
 
 class MessagesError extends MessagesState {
-  final String message;
+  final MessagesErrorType errorType;
 
-  const MessagesError(this.message);
+  const MessagesError(this.errorType);
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [errorType];
 }

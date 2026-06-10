@@ -195,6 +195,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{date} at {time}'**
   String dateAtTime(String date, String time);
+
+  /// Error message when a conversation cannot be found
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation not found'**
+  String get errorNotFound;
+
+  /// Error message when data load fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load data'**
+  String get errorLoadFailed;
+
+  /// Error message when sending a message fails
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send message'**
+  String get errorSendFailed;
+
+  /// Fallback error message for unknown errors
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong'**
+  String get errorUnknown;
 }
 
 class _AppLocalizationsDelegate

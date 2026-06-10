@@ -104,7 +104,7 @@ void main() {
       act: (bloc) => bloc.add(const LoadConversation(1)),
       expect: () => [
         const ConversationLoading(),
-        const ConversationError('Conversation not found'),
+        const ConversationError(ConversationErrorType.notFound),
       ],
     );
 
@@ -119,7 +119,7 @@ void main() {
       act: (bloc) => bloc.add(const LoadConversation(1)),
       expect: () => [
         const ConversationLoading(),
-        const ConversationError('Exception: Mark read failure'),
+        const ConversationError(ConversationErrorType.loadFailed),
       ],
     );
   });
@@ -368,7 +368,7 @@ void main() {
       ),
       act: (bloc) => bloc.add(const SendMessage('Outgoing message')),
       expect: () => [
-        const ConversationError('Exception: Insert failure'),
+        const ConversationError(ConversationErrorType.sendFailed),
       ],
     );
   });
@@ -422,7 +422,7 @@ void main() {
       act: (bloc) => bloc.add(const LoadComposeContacts()),
       expect: () => [
         const ComposeContactsLoading(),
-        const ComposeContactsError('Exception: Database error'),
+        const ComposeContactsError(ConversationErrorType.loadFailed),
       ],
     );
   });

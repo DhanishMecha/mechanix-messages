@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:mechanix_messages/core/utils/enums.dart';
 import 'package:mechanix_messages/features/messages/data/models/conversation_model.dart';
 import 'package:mechanix_messages/features/messages/data/models/message_model.dart';
 import 'package:mechanix_contacts/mechanix_contacts.dart';
@@ -50,12 +51,12 @@ class ConversationLoaded extends ConversationState {
 }
 
 class ConversationError extends ConversationState {
-  final String message;
+  final ConversationErrorType errorType;
 
-  const ConversationError(this.message);
+  const ConversationError(this.errorType);
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [errorType];
 }
 
 class ComposeContactsLoading extends ConversationState {
@@ -97,10 +98,10 @@ class ComposeContactsLoaded extends ConversationState {
 }
 
 class ComposeContactsError extends ConversationState {
-  final String message;
+  final ConversationErrorType errorType;
 
-  const ComposeContactsError(this.message);
+  const ComposeContactsError(this.errorType);
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [errorType];
 }

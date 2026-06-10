@@ -90,7 +90,7 @@ void main() {
       act: (bloc) => bloc.add(const LoadConversations()),
       expect: () => [
         const MessagesLoading(),
-        const MessagesError('Exception: Database error'),
+        const MessagesError(MessagesErrorType.loadFailed),
       ],
     );
   });
@@ -235,7 +235,7 @@ void main() {
       ),
       expect: () => [
         const MessagesLoading(),
-        const MessagesError('Exception: Filter failure'),
+        const MessagesError(MessagesErrorType.loadFailed),
       ],
     );
   });

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mechanix_messages/core/utils/colors.dart';
+import 'package:mechanix_messages/core/utils/helpers.dart';
 import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_bloc.dart';
 import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_event.dart';
 import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_state.dart';
@@ -48,7 +49,7 @@ class _ComposeMessageContactListState extends State<ComposeMessageContactList> {
         } else if (state is ComposeContactsError) {
           return Center(
             child: Text(
-              state.message,
+              getErrorMessage(context, state.errorType),
               style: const TextStyle(
                 color: AppColors.placeholderColor,
                 fontSize: 16,

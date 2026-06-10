@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mechanix_messages/core/utils/helpers.dart';
 import 'package:mechanix_messages/l10n/app_localizations.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_bloc.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_event.dart';
@@ -60,7 +61,7 @@ class _MessagesListState extends State<MessagesList> {
         if (state is MessagesError) {
           return Center(
             child: Text(
-              state.message,
+              getMessagesErrorMessage(context, state.errorType),
               style: const TextStyle(color: Colors.redAccent, fontSize: 14),
             ),
           );

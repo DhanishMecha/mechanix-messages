@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:mechanix_messages/core/utils/app_logger.dart';
 import 'package:mechanix_messages/core/utils/constants.dart';
 import 'package:mechanix_messages/core/utils/enums.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_event.dart';
@@ -20,12 +21,17 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
     LoadConversations event,
     Emitter<MessagesState> emit,
   ) async {
-    await _fetchAndEmitConversations(
-      filter: ConversationFilter.all,
-      query: '',
-      emit: emit,
-      showLoading: true,
-    );
+    try {
+      await _fetchAndEmitConversations(
+        filter: ConversationFilter.all,
+        query: '',
+        emit: emit,
+        showLoading: true,
+      );
+    } catch (e, st) {
+      AppLogger.e('MessagesBloc: _onLoadConversations failed', error: e, stack: st);
+      emit(const MessagesError(MessagesErrorType.loadFailed));
+    }
   }
 
   Future<void> _onFilterConversations(
@@ -36,12 +42,17 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
     final query =
         event.query ?? (current is MessagesLoaded ? current.searchQuery : '');
 
-    await _fetchAndEmitConversations(
-      filter: event.filter,
-      query: query,
-      emit: emit,
-      showLoading: true,
-    );
+    try {
+      await _fetchAndEmitConversations(
+        filter: event.filter,
+        query: query,
+        emit: emit,
+        showLoading: true,
+      );
+    } catch (e, st) {
+      AppLogger.e('MessagesBloc: _onFilterConversations failed', error: e, stack: st);
+      emit(const MessagesError(MessagesErrorType.loadFailed));
+    }
   }
 
   Future<void> _onLoadMoreConversations(
@@ -71,7 +82,8 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
           hasMore: newPage.length == Constants.pageSize,
         ),
       );
-    } catch (e) {
+    } catch (e, st) {
+      AppLogger.e('MessagesBloc: load more failed', error: e, stack: st);
       emit(current.copyWith(isLoadingMore: false));
     }
   }
@@ -101,8 +113,9 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
           isLoadingMore: false,
         ),
       );
-    } catch (e) {
-      emit(MessagesError(e.toString()));
+    } catch (e, st) {
+      AppLogger.e('MessagesBloc: load failed', error: e, stack: st);
+      emit(const MessagesError(MessagesErrorType.loadFailed));
     }
   }
 }

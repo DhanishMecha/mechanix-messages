@@ -90,5 +90,21 @@
         "type": "String"
       }
     }
+  },
+  "errorNotFound": "Conversation not found",
+  "@errorNotFound": {
+    "description": "Error message when a conversation cannot be found"
+  },
+  "errorLoadFailed": "Failed to load data",
+  "@errorLoadFailed": {
+    "description": "Error message when data load fails"
+  },
+  "errorSendFailed": "Failed to send message",
+  "@errorSendFailed": {
+    "description": "Error message when sending a message fails"
+  },
+  "errorUnknown": "Something went wrong",
+  "@errorUnknown": {
+    "description": "Fallback error message for unknown errors"
   }
 }

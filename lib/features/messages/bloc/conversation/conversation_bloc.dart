@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
+import 'package:mechanix_messages/core/utils/app_logger.dart';
 import 'package:mechanix_messages/core/utils/constants.dart';
 import 'package:mechanix_messages/core/utils/enums.dart';
 import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_event.dart';
@@ -30,7 +31,7 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
         event.conversationId,
       );
       if (conversation == null) {
-        emit(const ConversationError("Conversation not found"));
+        emit(const ConversationError(ConversationErrorType.notFound));
         return;
       }
 
@@ -47,8 +48,9 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
           hasMore: messages.length == Constants.pageSize,
         ),
       );
-    } catch (e) {
-      emit(ConversationError(e.toString()));
+    } catch (e, stack) {
+      AppLogger.e('Failed to load conversation: ${event.conversationId}', error: e, stack: stack);
+      emit(const ConversationError(ConversationErrorType.loadFailed));
     }
   }
 
@@ -78,7 +80,8 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
           hasMore: newPage.length == Constants.pageSize,
         ),
       );
-    } catch (e) {
+    } catch (e, stack) {
+      AppLogger.e('Failed to load more messages', error: e, stack: stack);
       emit(current.copyWith(isLoadingMore: false));
     }
   }
@@ -102,8 +105,9 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
 
       final updatedMessages = [message, ...current.messages];
       emit(current.copyWith(messages: updatedMessages));
-    } catch (e) {
-      emit(ConversationError(e.toString()));
+    } catch (e, stack) {
+      AppLogger.e('Failed to send message', error: e, stack: stack);
+      emit(const ConversationError(ConversationErrorType.sendFailed));
     }
   }
 
@@ -144,7 +148,8 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
           hasMore: newPage.length == Constants.pageSize,
         ),
       );
-    } catch (e) {
+    } catch (e, stack) {
+      AppLogger.e('Failed to load more compose contacts', error: e, stack: stack);
       emit(current.copyWith(isLoadingMore: false));
     }
   }
@@ -171,8 +176,9 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
           isLoadingMore: false,
         ),
       );
-    } catch (e) {
-      emit(ComposeContactsError(e.toString()));
+    } catch (e, stack) {
+      AppLogger.e('Failed to fetch compose contacts with query: $query', error: e, stack: stack);
+      emit(const ComposeContactsError(ConversationErrorType.loadFailed));
     }
   }
 }

@@ -66,4 +66,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String dateAtTime(String date, String time) {
     return '$date at $time';
   }
+
+  @override
+  String get errorNotFound => 'Conversation not found';
+
+  @override
+  String get errorLoadFailed => 'Failed to load data';
+
+  @override
+  String get errorSendFailed => 'Failed to send message';
+
+  @override
+  String get errorUnknown => 'Something went wrong';
 }

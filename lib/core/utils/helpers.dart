@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mechanix_messages/core/utils/enums.dart';
 import 'package:mechanix_messages/l10n/app_localizations.dart';
 
 String getInitials(String name) {
@@ -42,5 +44,35 @@ String formatDateHeader(DateTime dt, AppLocalizations l10n) {
   } else {
     final dateStr = DateFormat('d MMM yyyy').format(dt);
     return l10n.dateAtTime(dateStr, timeStr);
+  }
+}
+
+String getErrorMessage(BuildContext context, ConversationErrorType errorType) {
+  final l10n = AppLocalizations.of(context);
+  if (l10n == null) return '';
+  switch (errorType) {
+    case ConversationErrorType.notFound:
+      return l10n.errorNotFound;
+    case ConversationErrorType.loadFailed:
+      return l10n.errorLoadFailed;
+    case ConversationErrorType.sendFailed:
+      return l10n.errorSendFailed;
+    case ConversationErrorType.unknown:
+    default:
+      return l10n.errorUnknown;
+  }
+}
+
+String getMessagesErrorMessage(
+  BuildContext context,
+  MessagesErrorType errorType,
+) {
+  final l10n = AppLocalizations.of(context);
+  if (l10n == null) return '';
+  switch (errorType) {
+    case MessagesErrorType.loadFailed:
+      return l10n.errorLoadFailed;
+    case MessagesErrorType.unknown:
+      return l10n.errorUnknown;
   }
 }
