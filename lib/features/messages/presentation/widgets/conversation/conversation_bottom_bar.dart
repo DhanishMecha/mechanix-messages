@@ -44,6 +44,7 @@ class _ConversationBottomBarState extends State<ConversationBottomBar> {
         bottom: MediaQuery.of(context).padding.bottom + 12,
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           // Plus Add Button
           MessageButton(
@@ -60,19 +61,23 @@ class _ConversationBottomBarState extends State<ConversationBottomBar> {
           // Input field
           Expanded(
             child: Container(
-              height: 44,
+              constraints: const BoxConstraints(minHeight: 44, maxHeight: 120),
               decoration: BoxDecoration(
                 color: AppColors.searchBarBg,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: AppColors.borderColor, width: 1),
               ),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   const SizedBox(width: 14),
                   Expanded(
                     child: TextField(
                       controller: _controller,
                       focusNode: _focusNode,
+                      maxLines: null,
+                      minLines: 1,
+                      keyboardType: TextInputType.multiline,
                       style: const TextStyle(
                         fontSize: 16,
                         color: AppColors.titleColor,
@@ -87,7 +92,6 @@ class _ConversationBottomBarState extends State<ConversationBottomBar> {
                         isDense: true,
                         contentPadding: EdgeInsets.symmetric(vertical: 10),
                       ),
-                      onSubmitted: (_) => _handleSubmit(),
                     ),
                   ),
                   const SizedBox(width: 14),
@@ -100,6 +104,7 @@ class _ConversationBottomBarState extends State<ConversationBottomBar> {
           // Send Button
           MessageButton(
             iconPath: AppIcons.send,
+            iconSize: 24,
             onTap: _handleSubmit,
             bgColor: AppColors.contactName,
             iconColor: AppColors.bottomBarBg,

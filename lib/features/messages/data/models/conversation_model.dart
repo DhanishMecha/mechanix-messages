@@ -23,6 +23,12 @@ class ConversationEntity {
   @Transient()
   ContactEntity? contact;
 
+  @Transient()
+  MessageEntity? lastMessage;
+
+  @Transient()
+  bool hasUnread = false;
+
   ConversationEntity({
     required this.phoneNumber,
     DateTime? createdAt,

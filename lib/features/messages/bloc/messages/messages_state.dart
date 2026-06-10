@@ -18,44 +18,48 @@ class MessagesLoading extends MessagesState {
 }
 
 class MessagesLoaded extends MessagesState {
-  /// Full unfiltered list fetched from the repository.
-  final List<ConversationEntity> allConversations;
-
-  /// Subset shown in the UI after applying [filter] and [searchQuery].
-  final List<ConversationEntity> displayedConversations;
+  /// The list of conversations.
+  final List<ConversationEntity> conversations;
 
   final ConversationFilter filter;
 
   final String searchQuery;
 
+  final bool hasMore;
+
+  final bool isLoadingMore;
+
   const MessagesLoaded({
-    required this.allConversations,
-    required this.displayedConversations,
+    required this.conversations,
     this.filter = ConversationFilter.all,
     this.searchQuery = '',
+    this.hasMore = false,
+    this.isLoadingMore = false,
   });
 
   MessagesLoaded copyWith({
-    List<ConversationEntity>? allConversations,
-    List<ConversationEntity>? displayedConversations,
+    List<ConversationEntity>? conversations,
     ConversationFilter? filter,
     String? searchQuery,
+    bool? hasMore,
+    bool? isLoadingMore,
   }) {
     return MessagesLoaded(
-      allConversations: allConversations ?? this.allConversations,
-      displayedConversations:
-          displayedConversations ?? this.displayedConversations,
+      conversations: conversations ?? this.conversations,
       filter: filter ?? this.filter,
       searchQuery: searchQuery ?? this.searchQuery,
+      hasMore: hasMore ?? this.hasMore,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
     );
   }
 
   @override
   List<Object?> get props => [
-    allConversations,
-    displayedConversations,
+    conversations,
     filter,
     searchQuery,
+    hasMore,
+    isLoadingMore,
   ];
 }
 

@@ -24,3 +24,7 @@ class SendMessage extends ConversationEvent {
   @override
   List<Object?> get props => [body];
 }
+
+class LoadMoreMessages extends ConversationEvent {
+  const LoadMoreMessages();
+}

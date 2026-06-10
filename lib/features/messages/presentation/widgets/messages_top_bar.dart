@@ -12,12 +12,7 @@ class MessagesTopbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<MessagesBloc, MessagesState>(
-      buildWhen: (prev, curr) {
-        if (prev is MessagesLoaded && curr is MessagesLoaded) {
-          return prev.filter != curr.filter;
-        }
-        return false;
-      },
+      buildWhen: (prev, curr) => curr is MessagesLoaded,
       builder: (context, state) {
         final filter = state is MessagesLoaded
             ? state.filter
@@ -63,15 +58,15 @@ class _FilterToggle extends StatelessWidget {
             label: 'All',
             isActive: current == ConversationFilter.all,
             onTap: () => context.read<MessagesBloc>().add(
-                  const FilterConversations(ConversationFilter.all),
-                ),
+              const FilterConversations(ConversationFilter.all),
+            ),
           ),
           _Tab(
             label: 'Unread',
             isActive: current == ConversationFilter.unread,
             onTap: () => context.read<MessagesBloc>().add(
-                  const FilterConversations(ConversationFilter.unread),
-                ),
+              const FilterConversations(ConversationFilter.unread),
+            ),
           ),
         ],
       ),
@@ -96,7 +91,9 @@ class _Tab extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        width: 100,
+        height: 32,
+        alignment: Alignment.center,
         decoration: BoxDecoration(
           color: isActive ? AppColors.filterActiveBg : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
@@ -105,7 +102,7 @@ class _Tab extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 16,
-            fontWeight:  FontWeight.w400,
+            fontWeight: FontWeight.w400,
             color: isActive
                 ? AppColors.filterActiveText
                 : AppColors.filterInactiveText,

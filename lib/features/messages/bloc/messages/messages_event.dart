@@ -13,23 +13,18 @@ class LoadConversations extends MessagesEvent {
   const LoadConversations();
 }
 
-/// Filter conversations by [All] or [Unread].
+/// Filter and/or search conversations.
 class FilterConversations extends MessagesEvent {
   final ConversationFilter filter;
+  final String? query;
 
-  const FilterConversations(this.filter);
-
-  @override
-  List<Object?> get props => [filter];
-}
-
-/// Update the search query string.
-class SearchQueryChanged extends MessagesEvent {
-  final String query;
-
-  const SearchQueryChanged(this.query);
+  const FilterConversations(this.filter, {this.query});
 
   @override
-  List<Object?> get props => [query];
+  List<Object?> get props => [filter, query];
 }
 
+/// Load the next page of conversations.
+class LoadMoreConversations extends MessagesEvent {
+  const LoadMoreConversations();
+}

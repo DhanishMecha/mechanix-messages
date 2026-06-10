@@ -21,9 +21,8 @@ class MessagesCard extends StatelessWidget {
     final name = contact?.name ?? conversation.phoneNumber;
     final initials = getInitials(name);
 
-    final messages = conversation.messages;
-    final lastMsg = messages.isNotEmpty ? messages.last : null;
-    final hasUnread = messages.any((m) => m.readAt == null);
+    final lastMsg = conversation.lastMessage;
+    final hasUnread = conversation.hasUnread;
 
     return Column(
       children: [

@@ -1,4 +1,5 @@
 import 'package:mechanix_messages/core/services/objectbox_service.dart';
+import 'package:mechanix_messages/core/utils/constants.dart';
 import 'package:mechanix_messages/core/utils/enums.dart';
 import 'package:mechanix_messages/core/utils/app_logger.dart';
 import 'package:mechanix_messages/features/messages/data/models/conversation_model.dart';
@@ -45,6 +46,8 @@ class MessageRepositoryImpl implements MessageRepository {
   Future<List<ConversationEntity>> getConversations({
     ConversationFilter filter = ConversationFilter.all,
     String query = '',
+    int limit = Constants.pageSize,
+    int offset = 0,
   }) async {
     try {
       final boxService = await _getBox();
@@ -134,7 +137,9 @@ class MessageRepositoryImpl implements MessageRepository {
 
       final queryBuilder = conversationBox.query(cond)
         ..order(ConversationEntity_.updatedAt, flags: Order.descending);
-      final q = queryBuilder.build();
+      final q = queryBuilder.build()
+        ..limit = limit
+        ..offset = offset;
       final conversations = q.find();
       q.close();
 
@@ -160,6 +165,11 @@ class MessageRepositoryImpl implements MessageRepository {
         }
       }
 
+      final messageBox = boxService.store.box<MessageEntity>();
+      for (final conv in conversations) {
+        _populateLastMessageAndUnread(conv, messageBox);
+      }
+
       AppLogger.d(
         'Loaded ${conversations.length} conversations from database (filter: $filter, query: "$query").',
       );
@@ -174,6 +184,39 @@ class MessageRepositoryImpl implements MessageRepository {
     }
   }
 
+  void _populateLastMessageAndUnread(
+    ConversationEntity conversation,
+    Box<MessageEntity> messageBox,
+  ) {
+    if (conversation.id == 0) return;
+
+    final lastMsgQuery = messageBox.query(
+      MessageEntity_.conversation.equals(conversation.id),
+    )..order(MessageEntity_.createdAt, flags: Order.descending);
+    final lastMsgBuild = lastMsgQuery.build()..limit = 1;
+    final lastMsgList = lastMsgBuild.find();
+    lastMsgBuild.close();
+    if (lastMsgList.isNotEmpty) {
+      conversation.lastMessage = lastMsgList.first;
+    }
+
+    final unreadQuery = messageBox
+        .query(
+          MessageEntity_.conversation
+              .equals(conversation.id)
+              .and(
+                MessageEntity_.readAt.isNull().and(
+                  MessageEntity_.direction.equals(
+                    MessageDirection.incoming.index,
+                  ),
+                ),
+              ),
+        )
+        .build();
+    conversation.hasUnread = unreadQuery.count() > 0;
+    unreadQuery.close();
+  }
+
   @override
   Future<ConversationEntity?> getConversationById(int id) async {
     try {
@@ -182,6 +225,10 @@ class MessageRepositoryImpl implements MessageRepository {
       if (conversation != null) {
         conversation.contact = _getContactForPhoneNumber(
           conversation.phoneNumber,
+        );
+        _populateLastMessageAndUnread(
+          conversation,
+          boxService.store.box<MessageEntity>(),
         );
         AppLogger.d('Loaded conversation by ID: $id');
       } else {
@@ -228,6 +275,10 @@ class MessageRepositoryImpl implements MessageRepository {
       }
 
       conversation.contact = _getContactForPhoneNumber(phoneNumber);
+      _populateLastMessageAndUnread(
+        conversation,
+        boxService.store.box<MessageEntity>(),
+      );
       return conversation;
     } catch (e, stack) {
       AppLogger.e(
@@ -342,6 +393,41 @@ class MessageRepositoryImpl implements MessageRepository {
         stack: stack,
       );
       rethrow;
+    }
+  }
+
+  @override
+  Future<List<MessageEntity>> getMessagesForConversation(
+    int conversationId, {
+    int limit = Constants.pageSize,
+    int offset = 0,
+  }) async {
+    try {
+      final boxService = await _getBox();
+      final messageBox = boxService.store.box<MessageEntity>();
+
+      final builder = messageBox.query(
+        MessageEntity_.conversation.equals(conversationId),
+      )..order(MessageEntity_.createdAt, flags: Order.descending);
+
+      final query = builder.build()
+        ..limit = limit
+        ..offset = offset;
+
+      final messages = query.find();
+      query.close();
+
+      AppLogger.d(
+        'Loaded ${messages.length} messages for conversation $conversationId (limit: $limit, offset: $offset)',
+      );
+      return messages;
+    } catch (e, stack) {
+      AppLogger.e(
+        'Error loading messages for conversation $conversationId',
+        error: e,
+        stack: stack,
+      );
+      return [];
     }
   }
 }

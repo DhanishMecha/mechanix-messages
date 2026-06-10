@@ -1,9 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mechanix_messages/core/utils/colors.dart';
+import 'package:mechanix_messages/core/utils/enums.dart';
 import 'package:mechanix_messages/core/utils/icons.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_bloc.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_event.dart';
+import 'package:mechanix_messages/features/messages/bloc/messages/messages_state.dart';
 
 class MessagesSearchBar extends StatefulWidget {
   const MessagesSearchBar({super.key});
@@ -14,9 +17,26 @@ class MessagesSearchBar extends StatefulWidget {
 
 class _MessagesSearchBarState extends State<MessagesSearchBar> {
   final TextEditingController _controller = TextEditingController();
+  Timer? _debounce;
+
+  void _onSearchChanged(String value) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      if (mounted) {
+        final state = context.read<MessagesBloc>().state;
+        final currentFilter = state is MessagesLoaded
+            ? state.filter
+            : ConversationFilter.all;
+        context.read<MessagesBloc>().add(
+          FilterConversations(currentFilter, query: value.trim()),
+        );
+      }
+    });
+  }
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -43,25 +63,18 @@ class _MessagesSearchBarState extends State<MessagesSearchBar> {
           Expanded(
             child: TextField(
               controller: _controller,
-              style: const TextStyle(
-                fontSize: 20,
-                color: AppColors.titleColor,
-              ),
+              style: const TextStyle(fontSize: 20, color: AppColors.titleColor),
               decoration: const InputDecoration(
                 hintText: 'Search in messages',
                 hintStyle: TextStyle(
-                  fontSize: 14,
+                  fontSize: 16,
                   color: AppColors.placeholderColor,
                 ),
                 border: InputBorder.none,
                 isDense: true,
                 contentPadding: EdgeInsets.zero,
               ),
-              onChanged: (value) {
-                context
-                    .read<MessagesBloc>()
-                    .add(SearchQueryChanged(value.trim()));
-              },
+              onChanged: _onSearchChanged,
             ),
           ),
           const SizedBox(width: 14),

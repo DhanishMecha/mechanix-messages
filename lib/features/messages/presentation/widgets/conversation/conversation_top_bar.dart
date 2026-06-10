@@ -57,12 +57,6 @@ class ConversationTopBar extends StatelessWidget
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          Image.asset(
-            AppIcons.arrowRight,
-            width: 20,
-            height: 20,
-            color: AppColors.titleColor,
-          ),
         ],
       ),
     );

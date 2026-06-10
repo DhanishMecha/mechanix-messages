@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:mechanix_messages/core/utils/colors.dart';
 import 'package:mechanix_messages/core/utils/enums.dart';
 import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_bloc.dart';
+import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_event.dart';
 import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_state.dart';
 import 'package:mechanix_messages/features/messages/data/models/message_model.dart';
 import 'package:mechanix_messages/features/messages/presentation/widgets/conversation/message_bubble.dart';
@@ -23,25 +24,29 @@ class _ConversationListState extends State<ConversationList> {
   @override
   void initState() {
     super.initState();
-    _scrollToBottom();
+    _scrollController.addListener(_scrollListener);
   }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
     super.dispose();
   }
 
-  void _scrollToBottom() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
+  void _scrollListener() {
+    if (_scrollController.hasClients) {
+      final maxScroll = _scrollController.position.maxScrollExtent;
+      final currentScroll = _scrollController.position.pixels;
+      if (maxScroll - currentScroll <= 200) {
+        final blocState = context.read<ConversationBloc>().state;
+        if (blocState is ConversationLoaded) {
+          if (blocState.hasMore && !blocState.isLoadingMore) {
+            context.read<ConversationBloc>().add(const LoadMoreMessages());
+          }
+        }
       }
-    });
+    }
   }
 
   bool _isSameDay(DateTime date1, DateTime date2) {
@@ -58,54 +63,65 @@ class _ConversationListState extends State<ConversationList> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ConversationBloc, ConversationState>(
-      listener: (context, state) {
-        if (state is ConversationLoaded) {
-          _scrollToBottom();
+    final blocState = context.read<ConversationBloc>().state;
+    final isLoadingMore = blocState is ConversationLoaded
+        ? blocState.isLoadingMore
+        : false;
+
+    return ListView.builder(
+      controller: _scrollController,
+      reverse: true,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      itemCount: widget.messages.length + (isLoadingMore ? 1 : 0),
+      itemBuilder: (context, index) {
+        if (index == widget.messages.length) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16.0),
+            child: Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.white38,
+              ),
+            ),
+          );
         }
-      },
-      child: ListView.builder(
-        controller: _scrollController,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        itemCount: widget.messages.length,
-        itemBuilder: (context, index) {
-          final message = widget.messages[index];
-          final isOutgoing =
-              message.messageDirection == MessageDirection.outgoing;
 
-          bool showDateHeader = false;
-          if (index == 0) {
-            showDateHeader = true;
-          } else {
-            final prevMessage = widget.messages[index - 1];
-            showDateHeader = !_isSameDay(
-              prevMessage.createdAt,
-              message.createdAt,
-            );
-          }
+        final message = widget.messages[index];
+        final isOutgoing =
+            message.messageDirection == MessageDirection.outgoing;
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (showDateHeader)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 24.0),
-                  child: Text(
-                    _formatDateHeader(message.createdAt),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: AppColors.timeLabelColor,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w400,
-                    ),
+        bool showDateHeader = false;
+        if (index == widget.messages.length - 1) {
+          showDateHeader = true;
+        } else {
+          final nextMessage = widget.messages[index + 1];
+          showDateHeader = !_isSameDay(
+            nextMessage.createdAt,
+            message.createdAt,
+          );
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (showDateHeader)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24.0),
+                child: Text(
+                  _formatDateHeader(message.createdAt),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: AppColors.timeLabelColor,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
-              MessageBubble(message: message, isOutgoing: isOutgoing),
-              const SizedBox(height: 8),
-            ],
-          );
-        },
-      ),
+              ),
+            MessageBubble(message: message, isOutgoing: isOutgoing),
+            const SizedBox(height: 8),
+          ],
+        );
+      },
     );
   }
 }
