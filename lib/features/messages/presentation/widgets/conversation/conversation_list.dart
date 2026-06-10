@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:mechanix_messages/core/utils/colors.dart';
+import 'package:mechanix_messages/core/utils/helpers.dart';
 import 'package:mechanix_messages/core/utils/enums.dart';
 import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_bloc.dart';
 import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_event.dart';
@@ -49,18 +49,6 @@ class _ConversationListState extends State<ConversationList> {
     }
   }
 
-  bool _isSameDay(DateTime date1, DateTime date2) {
-    return date1.year == date2.year &&
-        date1.month == date2.month &&
-        date1.day == date2.day;
-  }
-
-  String _formatDateHeader(DateTime dt) {
-    final dateStr = DateFormat('d MMM yyyy').format(dt);
-    final timeStr = DateFormat('h:mm a').format(dt);
-    return '$dateStr at $timeStr';
-  }
-
   @override
   Widget build(BuildContext context) {
     final blocState = context.read<ConversationBloc>().state;
@@ -71,7 +59,7 @@ class _ConversationListState extends State<ConversationList> {
     return ListView.builder(
       controller: _scrollController,
       reverse: true,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      padding: const EdgeInsets.all(16),
       itemCount: widget.messages.length + (isLoadingMore ? 1 : 0),
       itemBuilder: (context, index) {
         if (index == widget.messages.length) {
@@ -92,36 +80,43 @@ class _ConversationListState extends State<ConversationList> {
 
         bool showDateHeader = false;
         if (index == widget.messages.length - 1) {
-          showDateHeader = true;
+          showDateHeader = true; // Always show first message date header
         } else {
           final nextMessage = widget.messages[index + 1];
-          showDateHeader = !_isSameDay(
-            nextMessage.createdAt,
-            message.createdAt,
-          );
+          showDateHeader = !isSameDay(nextMessage.createdAt, message.createdAt);
         }
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (showDateHeader)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24.0),
-                child: Text(
-                  _formatDateHeader(message.createdAt),
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: AppColors.timeLabelColor,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ),
+            if (showDateHeader) _DateHeader(dateTime: message.createdAt),
             MessageBubble(message: message, isOutgoing: isOutgoing),
             const SizedBox(height: 8),
           ],
         );
       },
+    );
+  }
+}
+
+class _DateHeader extends StatelessWidget {
+  final DateTime dateTime;
+
+  const _DateHeader({required this.dateTime});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 24.0),
+      child: Text(
+        formatDateHeader(dateTime),
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+          color: AppColors.timeLabelColor,
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
     );
   }
 }

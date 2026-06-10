@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:mechanix_messages/core/utils/app_routes.dart';
 import 'package:mechanix_messages/core/widgets/avatar.dart';
 import 'package:mechanix_messages/core/utils/colors.dart';
@@ -15,6 +14,18 @@ class MessagesCard extends StatelessWidget {
 
   const MessagesCard({super.key, required this.conversation});
 
+  void _onCardTap(BuildContext context) {
+    Navigator.pushNamed(
+      context,
+      AppRoutes.conversation,
+      arguments: conversation,
+    ).then((_) {
+      if (context.mounted) {
+        context.read<MessagesBloc>().add(const LoadConversations());
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final contact = conversation.contact;
@@ -27,17 +38,7 @@ class MessagesCard extends StatelessWidget {
     return Column(
       children: [
         InkWell(
-          onTap: () {
-            Navigator.pushNamed(
-              context,
-              AppRoutes.conversation,
-              arguments: conversation,
-            ).then((_) {
-              if (context.mounted) {
-                context.read<MessagesBloc>().add(const LoadConversations());
-              }
-            });
-          },
+          onTap: () => _onCardTap(context),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
@@ -71,7 +72,7 @@ class MessagesCard extends StatelessWidget {
                           const SizedBox(width: 8),
                           if (lastMsg != null)
                             Text(
-                              _formatTime(lastMsg.createdAt),
+                              formatTime(lastMsg.createdAt),
                               style: const TextStyle(
                                 fontSize: 16,
                                 height: 1.20,
@@ -110,19 +111,5 @@ class MessagesCard extends StatelessWidget {
         const Divider(height: 1, color: AppColors.dividerColor),
       ],
     );
-  }
-
-  String _formatTime(DateTime dt) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final msgDay = DateTime(dt.year, dt.month, dt.day);
-
-    if (msgDay == today) {
-      return DateFormat('h:mm a').format(dt);
-    } else if (today.difference(msgDay).inDays == 1) {
-      return 'Yesterday';
-    } else {
-      return DateFormat('d MMM').format(dt);
-    }
   }
 }
