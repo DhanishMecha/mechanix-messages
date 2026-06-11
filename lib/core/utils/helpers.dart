@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mechanix_messages/core/utils/enums.dart';
+import 'package:mechanix_messages/features/messages/data/models/enums.dart';
 import 'package:mechanix_messages/l10n/app_localizations.dart';
 
 String getInitials(String name) {

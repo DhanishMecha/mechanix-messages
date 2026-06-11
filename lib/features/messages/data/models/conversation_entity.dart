@@ -1,5 +1,5 @@
 import 'package:mechanix_messages/features/messages/data/models/message_entity.dart';
-import 'package:mechanix_contacts/mechanix_contacts.dart';
+import 'package:objectbox/objectbox.dart';
 
 @Entity()
 class ConversationEntity {
@@ -17,15 +17,6 @@ class ConversationEntity {
 
   @Backlink('conversation')
   final messages = ToMany<MessageEntity>();
-
-  @Transient()
-  ContactEntity? contact;
-
-  @Transient()
-  MessageEntity? lastMessage;
-
-  @Transient()
-  bool hasUnread = false;
 
   ConversationEntity({
     required this.phoneNumber,

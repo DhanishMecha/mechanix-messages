@@ -1,8 +1,9 @@
 import 'package:mechanix_messages/core/services/objectbox_service.dart';
 import 'package:mechanix_messages/core/utils/constants.dart';
-import 'package:mechanix_messages/core/utils/enums.dart';
+import 'package:mechanix_messages/features/messages/data/models/enums.dart';
 import 'package:mechanix_messages/core/utils/app_logger.dart';
 import 'package:mechanix_messages/features/messages/data/models/conversation_entity.dart';
+import 'package:mechanix_messages/features/messages/data/models/conversation_model.dart';
 import 'package:mechanix_messages/features/messages/data/models/message_entity.dart';
 import 'package:mechanix_messages/features/messages/data/repository/message_repository.dart';
 import 'package:mechanix_contacts/mechanix_contacts.dart';
@@ -43,7 +44,7 @@ class MessageRepositoryImpl implements MessageRepository {
   }
 
   @override
-  Future<List<ConversationEntity>> getConversations({
+  Future<List<ConversationModel>> getConversations({
     ConversationFilter filter = ConversationFilter.all,
     String query = '',
     int limit = Constants.pageSize,
@@ -74,7 +75,7 @@ class MessageRepositoryImpl implements MessageRepository {
           AppLogger.d(
             'Loaded 0 unread conversations from database (short circuit).',
           );
-          return <ConversationEntity>[];
+          return <ConversationModel>[];
         }
 
         final unreadConvIds = unreadMessages
@@ -144,6 +145,7 @@ class MessageRepositoryImpl implements MessageRepository {
       q.close();
 
       final phoneNumbers = conversations.map((c) => c.phoneNumber).toList();
+      final contactMap = <String, ContactEntity>{};
       if (phoneNumbers.isNotEmpty) {
         final phoneBox = ContactsStoreService.phoneNumbers;
         final phoneQuery = phoneBox
@@ -152,28 +154,25 @@ class MessageRepositoryImpl implements MessageRepository {
         final phoneEntities = phoneQuery.find();
         phoneQuery.close();
 
-        final contactMap = <String, ContactEntity>{};
         for (final pe in phoneEntities) {
           final contact = pe.contact.target;
           if (contact != null) {
             contactMap[pe.number] = contact;
           }
         }
-
-        for (final conv in conversations) {
-          conv.contact = contactMap[conv.phoneNumber];
-        }
       }
 
       final messageBox = boxService.store.box<MessageEntity>();
+      final List<ConversationModel> resultList = [];
       for (final conv in conversations) {
-        _populateLastMessageAndUnread(conv, messageBox);
+        final contact = contactMap[conv.phoneNumber];
+        resultList.add(_toConversationModel(conv, messageBox, contact));
       }
 
       AppLogger.d(
-        'Loaded ${conversations.length} conversations from database (filter: $filter, query: "$query").',
+        'Loaded ${resultList.length} conversations from database (filter: $filter, query: "$query").',
       );
-      return conversations;
+      return resultList;
     } catch (e, stack) {
       AppLogger.e(
         'Error loading conversations from database',
@@ -184,57 +183,55 @@ class MessageRepositoryImpl implements MessageRepository {
     }
   }
 
-  void _populateLastMessageAndUnread(
+  ConversationModel _toConversationModel(
     ConversationEntity conversation,
     Box<MessageEntity> messageBox,
+    ContactEntity? contact,
   ) {
-    if (conversation.id == 0) return;
+    MessageEntity? lastMessage;
 
-    final lastMsgQuery = messageBox.query(
-      MessageEntity_.conversation.equals(conversation.id),
-    )..order(MessageEntity_.createdAt, flags: Order.descending);
-    final lastMsgBuild = lastMsgQuery.build()..limit = 1;
-    final lastMsgList = lastMsgBuild.find();
-    lastMsgBuild.close();
-    if (lastMsgList.isNotEmpty) {
-      conversation.lastMessage = lastMsgList.first;
+    if (conversation.id != 0) {
+      final lastMsgQuery = messageBox.query(
+        MessageEntity_.conversation.equals(conversation.id),
+      )..order(MessageEntity_.createdAt, flags: Order.descending);
+      final lastMsgBuild = lastMsgQuery.build()..limit = 1;
+      final lastMsgList = lastMsgBuild.find();
+      lastMsgBuild.close();
+      if (lastMsgList.isNotEmpty) {
+        lastMessage = lastMsgList.first;
+      }
     }
 
-    final unreadQuery = messageBox
-        .query(
-          MessageEntity_.conversation
-              .equals(conversation.id)
-              .and(
-                MessageEntity_.readAt.isNull().and(
-                  MessageEntity_.direction.equals(
-                    MessageDirection.incoming.index,
-                  ),
-                ),
-              ),
-        )
-        .build();
-    conversation.hasUnread = unreadQuery.count() > 0;
-    unreadQuery.close();
+    return ConversationModel(
+      id: conversation.id,
+      phoneNumber: conversation.phoneNumber,
+      createdAt: conversation.createdAt,
+      updatedAt: conversation.updatedAt,
+      contact: contact,
+      lastMessage: lastMessage,
+    );
   }
 
   @override
-  Future<ConversationEntity?> getConversationById(int id) async {
+  Future<ConversationModel?> getConversationById(int id) async {
     try {
       final boxService = await _getBox();
       final conversation = boxService.store.box<ConversationEntity>().get(id);
       if (conversation != null) {
-        conversation.contact = _getContactForPhoneNumber(
+        final contact = _getContactForPhoneNumber(
           conversation.phoneNumber,
         );
-        _populateLastMessageAndUnread(
+        final model = _toConversationModel(
           conversation,
           boxService.store.box<MessageEntity>(),
+          contact,
         );
         AppLogger.d('Loaded conversation by ID: $id');
+        return model;
       } else {
         AppLogger.d('Conversation with ID: $id not found.');
       }
-      return conversation;
+      return null;
     } catch (e, stack) {
       AppLogger.e(
         'Error loading conversation by ID: $id',
@@ -246,7 +243,7 @@ class MessageRepositoryImpl implements MessageRepository {
   }
 
   @override
-  Future<ConversationEntity> getOrCreateConversation(String phoneNumber) async {
+  Future<ConversationModel> getOrCreateConversation(String phoneNumber) async {
     try {
       final boxService = await _getBox();
       final conversationBox = boxService.store.box<ConversationEntity>();
@@ -274,12 +271,12 @@ class MessageRepositoryImpl implements MessageRepository {
         AppLogger.d('Found existing ConversationEntity for: $phoneNumber');
       }
 
-      conversation.contact = _getContactForPhoneNumber(phoneNumber);
-      _populateLastMessageAndUnread(
+      final contact = _getContactForPhoneNumber(phoneNumber);
+      return _toConversationModel(
         conversation,
         boxService.store.box<MessageEntity>(),
+        contact,
       );
-      return conversation;
     } catch (e, stack) {
       AppLogger.e(
         'Error in getOrCreateConversation for: $phoneNumber',
@@ -321,8 +318,6 @@ class MessageRepositoryImpl implements MessageRepository {
       } else {
         conversation.updatedAt = now;
       }
-
-      conversation.contact = _getContactForPhoneNumber(phoneNumber);
 
       final message = MessageEntity(
         sender: direction == MessageDirection.incoming ? phoneNumber : 'me',

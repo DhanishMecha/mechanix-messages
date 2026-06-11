@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mechanix_messages/core/services/objectbox_service.dart';
-import 'package:mechanix_messages/core/utils/enums.dart';
+import 'package:mechanix_messages/features/messages/data/models/enums.dart';
 import 'package:mechanix_messages/features/messages/data/models/conversation_entity.dart';
 import 'package:mechanix_messages/features/messages/data/models/message_entity.dart';
 import 'package:mechanix_messages/features/messages/data/repository/message_repository_impl.dart';

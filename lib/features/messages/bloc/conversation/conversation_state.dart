@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:mechanix_messages/core/utils/enums.dart';
-import 'package:mechanix_messages/features/messages/data/models/conversation_entity.dart';
+import 'package:mechanix_messages/features/messages/data/models/enums.dart';
+import 'package:mechanix_messages/features/messages/data/models/conversation_model.dart';
 import 'package:mechanix_messages/features/messages/data/models/message_entity.dart';
 import 'package:mechanix_contacts/mechanix_contacts.dart';
 
@@ -20,7 +20,7 @@ class ConversationLoading extends ConversationState {
 }
 
 class ConversationLoaded extends ConversationState {
-  final ConversationEntity conversation;
+  final ConversationModel conversation;
   final List<MessageEntity> messages;
   final bool hasMore;
   final bool isLoadingMore;
@@ -33,7 +33,7 @@ class ConversationLoaded extends ConversationState {
   });
 
   ConversationLoaded copyWith({
-    ConversationEntity? conversation,
+    ConversationModel? conversation,
     List<MessageEntity>? messages,
     bool? hasMore,
     bool? isLoadingMore,

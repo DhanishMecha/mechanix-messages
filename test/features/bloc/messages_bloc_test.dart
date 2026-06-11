@@ -2,11 +2,11 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mechanix_messages/core/utils/constants.dart';
-import 'package:mechanix_messages/core/utils/enums.dart';
+import 'package:mechanix_messages/features/messages/data/models/enums.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_bloc.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_event.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_state.dart';
-import 'package:mechanix_messages/features/messages/data/models/conversation_entity.dart';
+import 'package:mechanix_messages/features/messages/data/models/conversation_model.dart';
 import 'package:mechanix_messages/features/messages/data/repository/message_repository.dart';
 
 class MockMessageRepository extends Mock implements MessageRepository {}
@@ -14,7 +14,7 @@ class MockMessageRepository extends Mock implements MessageRepository {}
 void main() {
   late MockMessageRepository mockRepository;
   late MessagesBloc messagesBloc;
-  late List<ConversationEntity> tConversations;
+  late List<ConversationModel> tConversations;
 
   setUpAll(() {
     registerFallbackValue(ConversationFilter.all);
@@ -23,9 +23,20 @@ void main() {
   setUp(() {
     mockRepository = MockMessageRepository();
     messagesBloc = MessagesBloc(repository: mockRepository);
+    final now = DateTime.now();
     tConversations = [
-      ConversationEntity(phoneNumber: '+1234567890')..id = 1,
-      ConversationEntity(phoneNumber: '+0987654321')..id = 2,
+      ConversationModel(
+        id: 1,
+        phoneNumber: '+1234567890',
+        createdAt: now,
+        updatedAt: now,
+      ),
+      ConversationModel(
+        id: 2,
+        phoneNumber: '+0987654321',
+        createdAt: now,
+        updatedAt: now,
+      ),
     ];
   });
 
@@ -241,12 +252,23 @@ void main() {
   });
 
   group('LoadMoreConversations', () {
+    final tTime = DateTime(2026, 6, 11);
     final tConversationsPage1 = List.generate(
       Constants.pageSize,
-      (i) => ConversationEntity(phoneNumber: '+$i')..id = i + 1,
+      (i) => ConversationModel(
+        id: i + 1,
+        phoneNumber: '+$i',
+        createdAt: tTime,
+        updatedAt: tTime,
+      ),
     );
     final tConversationsPage2 = [
-      ConversationEntity(phoneNumber: '+999')..id = 999,
+      ConversationModel(
+        id: 999,
+        phoneNumber: '+999',
+        createdAt: tTime,
+        updatedAt: tTime,
+      ),
     ];
 
     blocTest<MessagesBloc, MessagesState>(

@@ -2,11 +2,11 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:mechanix_messages/core/utils/constants.dart';
-import 'package:mechanix_messages/core/utils/enums.dart';
+import 'package:mechanix_messages/features/messages/data/models/enums.dart';
 import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_bloc.dart';
 import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_event.dart';
 import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_state.dart';
-import 'package:mechanix_messages/features/messages/data/models/conversation_entity.dart';
+import 'package:mechanix_messages/features/messages/data/models/conversation_model.dart';
 import 'package:mechanix_messages/features/messages/data/models/message_entity.dart';
 import 'package:mechanix_messages/features/messages/data/repository/message_repository.dart';
 import 'package:mechanix_contacts/mechanix_contacts.dart';
@@ -16,7 +16,7 @@ class MockMessageRepository extends Mock implements MessageRepository {}
 void main() {
   late MockMessageRepository mockRepository;
   late ConversationBloc conversationBloc;
-  late ConversationEntity tConversation;
+  late ConversationModel tConversation;
   late MessageEntity tMessage;
   late List<ContactEntity> tContacts;
 
@@ -27,7 +27,13 @@ void main() {
   setUp(() {
     mockRepository = MockMessageRepository();
     conversationBloc = ConversationBloc(repository: mockRepository);
-    tConversation = ConversationEntity(phoneNumber: '+1234567890')..id = 1;
+    final now = DateTime.now();
+    tConversation = ConversationModel(
+      id: 1,
+      phoneNumber: '+1234567890',
+      createdAt: now,
+      updatedAt: now,
+    );
     tMessage = MessageEntity(
       sender: '+1234567890',
       recipient: 'me',

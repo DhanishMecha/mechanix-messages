@@ -4,7 +4,7 @@ import 'package:mechanix_messages/features/messages/bloc/messages/messages_bloc.
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_event.dart';
 import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_bloc.dart';
 import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_event.dart';
-import 'package:mechanix_messages/features/messages/data/models/conversation_entity.dart';
+import 'package:mechanix_messages/features/messages/data/models/conversation_model.dart';
 import 'package:mechanix_messages/features/messages/data/repository/message_repository_impl.dart';
 import 'package:mechanix_messages/features/messages/presentation/widgets/conversation.dart';
 import 'package:mechanix_messages/features/messages/presentation/widgets/conversation/conversation_bottom_bar.dart';
@@ -16,7 +16,7 @@ class ConversationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final conversation =
-        ModalRoute.of(context)!.settings.arguments as ConversationEntity;
+        ModalRoute.of(context)!.settings.arguments as ConversationModel;
 
     return BlocProvider<ConversationBloc>(
       create: (context) =>

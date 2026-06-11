@@ -1,19 +1,19 @@
-import 'package:mechanix_messages/core/utils/enums.dart';
-import 'package:mechanix_messages/features/messages/data/models/conversation_entity.dart';
+import 'package:mechanix_messages/features/messages/data/models/enums.dart';
+import 'package:mechanix_messages/features/messages/data/models/conversation_model.dart';
 import 'package:mechanix_messages/features/messages/data/models/message_entity.dart';
 import 'package:mechanix_contacts/mechanix_contacts.dart';
 
 abstract class MessageRepository {
-  Future<List<ConversationEntity>> getConversations({
+  Future<List<ConversationModel>> getConversations({
     ConversationFilter filter,
     String query,
     int limit,
     int offset,
   });
 
-  Future<ConversationEntity?> getConversationById(int id);
+  Future<ConversationModel?> getConversationById(int id);
 
-  Future<ConversationEntity> getOrCreateConversation(String phoneNumber);
+  Future<ConversationModel> getOrCreateConversation(String phoneNumber);
 
   Future<MessageEntity> insertMessage(
     String phoneNumber,

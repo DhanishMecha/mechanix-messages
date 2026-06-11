@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:mechanix_messages/core/utils/enums.dart';
-import 'package:mechanix_messages/features/messages/data/models/conversation_entity.dart';
+import 'package:mechanix_messages/features/messages/data/models/enums.dart';
+import 'package:mechanix_messages/features/messages/data/models/conversation_model.dart';
 
 abstract class MessagesState extends Equatable {
   const MessagesState();
@@ -19,7 +19,7 @@ class MessagesLoading extends MessagesState {
 
 class MessagesLoaded extends MessagesState {
   /// The list of conversations.
-  final List<ConversationEntity> conversations;
+  final List<ConversationModel> conversations;
 
   final ConversationFilter filter;
 
@@ -38,7 +38,7 @@ class MessagesLoaded extends MessagesState {
   });
 
   MessagesLoaded copyWith({
-    List<ConversationEntity>? conversations,
+    List<ConversationModel>? conversations,
     ConversationFilter? filter,
     String? searchQuery,
     bool? hasMore,

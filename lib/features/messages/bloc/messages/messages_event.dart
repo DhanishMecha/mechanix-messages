@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:mechanix_messages/core/utils/enums.dart';
+import 'package:mechanix_messages/features/messages/data/models/enums.dart';
 
 abstract class MessagesEvent extends Equatable {
   const MessagesEvent();

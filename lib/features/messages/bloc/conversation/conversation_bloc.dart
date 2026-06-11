@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:mechanix_messages/core/utils/app_logger.dart';
 import 'package:mechanix_messages/core/utils/constants.dart';
-import 'package:mechanix_messages/core/utils/enums.dart';
+import 'package:mechanix_messages/features/messages/data/models/enums.dart';
 import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_event.dart';
 import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_state.dart';
 import 'package:mechanix_messages/features/messages/data/repository/message_repository.dart';
