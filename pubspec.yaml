@@ -24,9 +24,9 @@ dependencies:
   objectbox: ^5.3.2
   bloc_test: ^10.0.0
   mechanix_contacts:
-    git:
-      url: https://github.com/yogitah-mecha/mechanix-contacts.git
-      ref: 9aa2a092abfaff74f3fcc09b0f2ba6ad693dcab8
+    git: 
+      url: https://github.com/mecha-org/mechanix-contacts.git
+      ref: b1b7a30d901a14fdcf45a648182e975df40e0223
 
 dev_dependencies:
   flutter_test:

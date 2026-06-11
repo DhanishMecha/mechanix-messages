@@ -61,3 +61,7 @@ flutter-elinux test integration_test/<test-file-name>
 - Local message storage.
 - Responsive user interface.
 - Localization support.
+
+## TODO
+
+[ ] Integrate SMS SDK for sending and receiving messages.
