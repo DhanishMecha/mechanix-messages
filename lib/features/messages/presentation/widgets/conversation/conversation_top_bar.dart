@@ -48,11 +48,7 @@ class ConversationTopBar extends StatelessWidget
           Expanded(
             child: Text(
               name,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: AppColors.titleColor,
-              ),
+              style: Theme.of(context).textTheme.titleMedium,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),

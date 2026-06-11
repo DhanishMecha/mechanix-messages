@@ -70,15 +70,11 @@ class _ConversationBottomBarState extends State<ConversationBottomBar> {
                       minLines: 1,
                       keyboardType: TextInputType.multiline,
                       maxLength: Constants.maxMessageLength,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: AppColors.titleColor,
-                      ),
+                      style: Theme.of(context).textTheme.bodyLarge,
                       decoration: InputDecoration(
                         hintText: l10n.writeMessage,
                         counter: const SizedBox.shrink(),
-                        hintStyle: const TextStyle(
-                          fontSize: 14,
+                        hintStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: AppColors.placeholderColor,
                         ),
                         border: InputBorder.none,

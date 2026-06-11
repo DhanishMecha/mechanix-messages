@@ -118,10 +118,8 @@ class _ComposeMessageSearchState extends State<ComposeMessageSearch> {
                         child: query.isEmpty
                             ? Text(
                                 l10n.toLabel,
-                                style: const TextStyle(
-                                  fontSize: 16,
+                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                   color: AppColors.placeholderColor,
-                                  fontWeight: FontWeight.w400,
                                 ),
                               )
                             : Image.asset(
@@ -137,14 +135,10 @@ class _ComposeMessageSearchState extends State<ComposeMessageSearch> {
                       child: TextField(
                         key: const ValueKey('search_text_field'),
                         controller: _searchController,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: AppColors.titleColor,
-                        ),
+                        style: Theme.of(context).textTheme.bodyLarge,
                         decoration: InputDecoration(
                           hintText: l10n.searchOrEnterPhone,
-                          hintStyle: const TextStyle(
-                            fontSize: 14,
+                          hintStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: AppColors.placeholderColor,
                           ),
                           border: InputBorder.none,
@@ -185,9 +179,8 @@ class _ComposeMessageSearchState extends State<ComposeMessageSearch> {
                 leading: const Avatar(initials: '#'),
                 title: Text(
                   l10n.sendMessageTo(query),
-                  style: const TextStyle(
-                    color: AppColors.titleColor,
-                    fontSize: 18,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
                 onTap: () => _startConversation(query),

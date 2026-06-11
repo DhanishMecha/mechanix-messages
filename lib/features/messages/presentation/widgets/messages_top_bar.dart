@@ -25,10 +25,7 @@ class MessagesTopbar extends StatelessWidget {
           children: [
             Text(
               l10n.allMessages,
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w300,
-                color: AppColors.titleColor,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 height: 1.20,
               ),
             ),
@@ -103,9 +100,7 @@ class _Tab extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
             color: isActive
                 ? AppColors.filterActiveText
                 : AppColors.filterInactiveText,

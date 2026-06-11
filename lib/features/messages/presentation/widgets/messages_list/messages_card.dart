@@ -62,8 +62,7 @@ class MessagesCard extends StatelessWidget {
                               name,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 20,
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                 fontWeight: hasUnread
                                     ? FontWeight.w700
                                     : FontWeight.w600,
@@ -75,8 +74,7 @@ class MessagesCard extends StatelessWidget {
                           if (lastMsg != null)
                             Text(
                               formatTime(lastMsg.createdAt, l10n),
-                              style: const TextStyle(
-                                fontSize: 16,
+                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                 height: 1.20,
                                 fontWeight: FontWeight.w300,
                                 color: AppColors.timeLabelColor,
@@ -97,9 +95,9 @@ class MessagesCard extends StatelessWidget {
                           lastMsg.body,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 20,
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             color: AppColors.timeLabelColor,
+                            fontWeight: FontWeight.normal,
                             height: 1.4,
                           ),
                         ),

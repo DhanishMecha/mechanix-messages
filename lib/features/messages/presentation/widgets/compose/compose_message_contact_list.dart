@@ -50,9 +50,8 @@ class _ComposeMessageContactListState extends State<ComposeMessageContactList> {
           return Center(
             child: Text(
               getErrorMessage(context, state.errorType),
-              style: const TextStyle(
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: AppColors.placeholderColor,
-                fontSize: 16,
               ),
             ),
           );
@@ -65,9 +64,8 @@ class _ComposeMessageContactListState extends State<ComposeMessageContactList> {
                 searchQuery.isEmpty
                     ? l10n.noContactsFound
                     : l10n.noMatchingContacts,
-                style: const TextStyle(
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: AppColors.placeholderColor,
-                  fontSize: 16,
                 ),
               ),
             );

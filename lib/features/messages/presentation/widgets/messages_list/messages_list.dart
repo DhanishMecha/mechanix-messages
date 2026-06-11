@@ -62,7 +62,9 @@ class _MessagesListState extends State<MessagesList> {
           return Center(
             child: Text(
               getMessagesErrorMessage(context, state.errorType),
-              style: const TextStyle(color: Colors.redAccent, fontSize: 14),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Colors.redAccent,
+              ),
             ),
           );
         }
@@ -75,7 +77,9 @@ class _MessagesListState extends State<MessagesList> {
             return Center(
               child: Text(
                 AppLocalizations.of(context)!.noMessages,
-                style: const TextStyle(color: Colors.white38, fontSize: 14),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Colors.white38,
+                ),
               ),
             );
           }

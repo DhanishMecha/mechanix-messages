@@ -22,10 +22,8 @@ class Avatar extends StatelessWidget {
           alignment: Alignment.center,
           child: Text(
             initials,
-            style: const TextStyle(
-              fontSize: 16,
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
               fontWeight: FontWeight.w600,
-              color: AppColors.titleColor,
             ),
           ),
         ),

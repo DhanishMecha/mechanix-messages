@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mechanix_messages/l10n/app_localizations.dart';
-import 'package:mechanix_messages/core/utils/colors.dart';
 import 'package:mechanix_messages/core/utils/helpers.dart';
 import 'package:mechanix_messages/features/messages/data/models/enums.dart';
 import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_bloc.dart';
@@ -113,11 +112,7 @@ class _DateHeader extends StatelessWidget {
       child: Text(
         formatDateHeader(dateTime, l10n),
         textAlign: TextAlign.center,
-        style: const TextStyle(
-          color: AppColors.timeLabelColor,
-          fontSize: 14,
-          fontWeight: FontWeight.w400,
-        ),
+        style: Theme.of(context).textTheme.bodySmall,
       ),
     );
   }

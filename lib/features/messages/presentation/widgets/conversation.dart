@@ -25,7 +25,9 @@ class Conversation extends StatelessWidget {
           return Center(
             child: Text(
               getErrorMessage(context, state.errorType),
-              style: const TextStyle(color: Colors.redAccent, fontSize: 14),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Colors.redAccent,
+              ),
             ),
           );
         }

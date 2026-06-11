@@ -57,15 +57,13 @@ class ComposeContactTile extends StatelessWidget {
       leading: Avatar(initials: initials),
       title: Text(
         name,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: AppColors.titleColor,
-        ),
+        style: Theme.of(context).textTheme.titleSmall,
       ),
       subtitle: Text(
         phoneNumber,
-        style: const TextStyle(fontSize: 14, color: AppColors.subtitleColor),
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: AppColors.subtitleColor,
+        ),
       ),
       onTap: () {
         if (contact.phoneNumbers.isNotEmpty) {

@@ -51,9 +51,7 @@ class _MessageBubbleState extends State<MessageBubble> {
               ),
               child: Text(
                 widget.message.body,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: AppColors.titleColor,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   height: 1.4,
                 ),
               ),
@@ -66,10 +64,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                 padding: const EdgeInsets.only(top: 4, left: 8, right: 8),
                 child: Text(
                   timeStr,
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.timeLabelColor,
-                  ),
+                  style: Theme.of(context).textTheme.labelSmall,
                 ),
               ),
             ),

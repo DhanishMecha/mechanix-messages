@@ -22,10 +22,8 @@ class ComposeMessageTopBar extends StatelessWidget implements PreferredSizeWidge
       ),
       title: Text(
         l10n.newMessage,
-        style: const TextStyle(
-          fontSize: 24,
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.w400,
-          color: AppColors.titleColor,
         ),
       ),
       backgroundColor: Colors.transparent,

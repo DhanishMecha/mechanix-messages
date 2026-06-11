@@ -65,11 +65,12 @@ class _MessagesSearchBarState extends State<MessagesSearchBar> {
           Expanded(
             child: TextField(
               controller: _controller,
-              style: const TextStyle(fontSize: 20, color: AppColors.titleColor),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w400,
+              ),
               decoration: InputDecoration(
                 hintText: l10n.searchInMessages,
-                hintStyle: const TextStyle(
-                  fontSize: 16,
+                hintStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: AppColors.placeholderColor,
                 ),
                 border: InputBorder.none,

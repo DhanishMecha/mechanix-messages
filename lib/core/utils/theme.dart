@@ -8,9 +8,38 @@ class AppTheme {
       surfaceTintColor: Colors.transparent,
     ),
     scaffoldBackgroundColor: Colors.black,
-    textTheme: ThemeData.dark(
-      useMaterial3: true,
-    ).textTheme.apply(fontFamily: "Sora"),
+    textTheme: ThemeData.dark(useMaterial3: true).textTheme.copyWith(
+      titleLarge: const TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.w300,
+        color: AppColors.titleColor,
+      ),
+      titleMedium: const TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        color: AppColors.titleColor,
+      ),
+      titleSmall: const TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+        color: AppColors.titleColor,
+      ),
+      bodyLarge: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+        color: AppColors.titleColor,
+      ),
+      bodySmall: const TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        color: AppColors.timeLabelColor,
+      ),
+      labelSmall: const TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.w400,
+        color: AppColors.timeLabelColor,
+      ),
+    ).apply(fontFamily: "Sora"),
     iconButtonTheme: const IconButtonThemeData(
       style: ButtonStyle(
         mouseCursor: WidgetStatePropertyAll(SystemMouseCursors.click),
@@ -33,9 +62,38 @@ class AppTheme {
       backgroundColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
     ),
-    textTheme: ThemeData.light(
-      useMaterial3: true,
-    ).textTheme.apply(fontFamily: "Sora"),
+    textTheme: ThemeData.light(useMaterial3: true).textTheme.copyWith(
+      titleLarge: const TextStyle(
+        fontSize: 24,
+        fontWeight: FontWeight.w300,
+        color: AppColors.titleColor,
+      ),
+      titleMedium: const TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        color: AppColors.titleColor,
+      ),
+      titleSmall: const TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+        color: AppColors.titleColor,
+      ),
+      bodyLarge: const TextStyle(
+        fontSize: 16,
+        fontWeight: FontWeight.w400,
+        color: AppColors.titleColor,
+      ),
+      bodySmall: const TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w400,
+        color: AppColors.timeLabelColor,
+      ),
+      labelSmall: const TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.w400,
+        color: AppColors.timeLabelColor,
+      ),
+    ).apply(fontFamily: "Sora"),
     iconButtonTheme: const IconButtonThemeData(
       style: ButtonStyle(
         mouseCursor: WidgetStatePropertyAll(SystemMouseCursors.click),
