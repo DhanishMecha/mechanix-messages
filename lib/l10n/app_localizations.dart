@@ -166,6 +166,12 @@ abstract class AppLocalizations {
   /// **'Write a message...'**
   String get writeMessage;
 
+  /// Prefix prepended to the preview of outgoing messages
+  ///
+  /// In en, this message translates to:
+  /// **'You: '**
+  String get youPrefix;
+
   /// Hint text in the messages list search bar
   ///
   /// In en, this message translates to:

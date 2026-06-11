@@ -47,6 +47,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get writeMessage => 'Write a message...';
 
   @override
+  String get youPrefix => 'You: ';
+
+  @override
   String get searchInMessages => 'Search in messages';
 
   @override

@@ -53,6 +53,10 @@
   "@writeMessage": {
     "description": "Hint text for message composer text input"
   },
+  "youPrefix": "You: ",
+  "@youPrefix": {
+    "description": "Prefix prepended to the preview of outgoing messages"
+  },
   "searchInMessages": "Search in messages",
   "@searchInMessages": {
     "description": "Hint text in the messages list search bar"

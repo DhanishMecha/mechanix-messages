@@ -9,6 +9,7 @@ import 'package:mechanix_messages/core/utils/icons.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_bloc.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_event.dart';
 import 'package:mechanix_messages/features/messages/data/models/conversation_model.dart';
+import 'package:mechanix_messages/features/messages/data/models/enums.dart';
 
 class MessagesCard extends StatelessWidget {
   final ConversationModel conversation;
@@ -92,7 +93,7 @@ class MessagesCard extends StatelessWidget {
                       const SizedBox(height: 12),
                       if (lastMsg != null)
                         Text(
-                          lastMsg.body,
+                          '${lastMsg.messageDirection == MessageDirection.outgoing ? l10n.youPrefix : ""}${lastMsg.body}',
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(
