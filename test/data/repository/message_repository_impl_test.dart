@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:mechanix_messages/core/services/objectbox_service.dart';
+import 'package:mechanix_messages/core/services/database_service.dart';
 import 'package:mechanix_messages/features/messages/data/models/enums.dart';
 import 'package:mechanix_messages/features/messages/data/models/conversation_entity.dart';
 import 'package:mechanix_messages/features/messages/data/models/message_entity.dart';
@@ -10,7 +10,7 @@ import 'package:mechanix_messages/objectbox.g.dart' as messages_g;
 import 'package:mechanix_contacts/objectbox.g.dart' as contacts_g;
 
 class MockStore extends Mock implements Store {}
-class MockObjectBoxService extends Mock implements ObjectBoxService {}
+class MockObjectBoxService extends Mock implements DatabaseService {}
 
 int _testDbCounter = 0;
 

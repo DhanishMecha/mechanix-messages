@@ -115,11 +115,16 @@ class ConversationBloc extends Bloc<ConversationEvent, ConversationState> {
     LoadComposeContacts event,
     Emitter<ConversationState> emit,
   ) async {
+    try{
     await _fetchAndEmitComposeContacts(
       query: event.query,
       emit: emit,
       showLoading: true,
     );
+    } catch (e,stack){
+      AppLogger.e('Failed to load compose contacts', error: e, stack: stack);
+      emit(const ComposeContactsError(ConversationErrorType.loadFailed));
+    }
   }
 
   Future<void> _onLoadMoreComposeContacts(

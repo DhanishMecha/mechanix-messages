@@ -4,15 +4,15 @@ import 'package:mechanix_messages/core/utils/app_logger.dart';
 import 'package:mechanix_messages/core/utils/constants.dart';
 import 'package:mechanix_messages/objectbox.g.dart';
 
-class ObjectBoxService {
+class DatabaseService {
   static Store? _store;
   static String? _dbDirectoryPath;
 
   Store get store => _store!;
   String? get dbDirectoryPath => _dbDirectoryPath;
 
-  static Future<ObjectBoxService> init() async {
-    final service = ObjectBoxService();
+  static Future<DatabaseService> init() async {
+    final service = DatabaseService();
     await service.ensureStoreConnected();
     return service;
   }
@@ -45,7 +45,7 @@ class ObjectBoxService {
       _dbDirectoryPath = appDir.path;
 
       AppLogger.i(
-        '[ObjectBoxService] ObjectBox store opened at ${appDir.path}',
+        '[DatabaseService] ObjectBox store opened at ${appDir.path}',
       );
     } catch (e) {
       AppLogger.e('Failed to initialize ObjectBox store: $e');

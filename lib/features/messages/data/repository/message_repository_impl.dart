@@ -1,4 +1,4 @@
-import 'package:mechanix_messages/core/services/objectbox_service.dart';
+import 'package:mechanix_messages/core/services/database_service.dart';
 import 'package:mechanix_messages/core/utils/constants.dart';
 import 'package:mechanix_messages/features/messages/data/models/enums.dart';
 import 'package:mechanix_messages/core/utils/app_logger.dart';
@@ -10,16 +10,16 @@ import 'package:mechanix_contacts/mechanix_contacts.dart';
 import 'package:mechanix_messages/objectbox.g.dart';
 
 class MessageRepositoryImpl implements MessageRepository {
-  ObjectBoxService? _objectBox;
+  DatabaseService? _objectBox;
 
-  MessageRepositoryImpl({ObjectBoxService? objectBox}) : _objectBox = objectBox;
+  MessageRepositoryImpl({DatabaseService? objectBox}) : _objectBox = objectBox;
 
-  Future<ObjectBoxService> _getBox() async {
+  Future<DatabaseService> _getBox() async {
     try {
       if (_objectBox == null) {
         AppLogger.i('Initializing ObjectBox  connections...');
         await ContactsStoreService.ensureConnected();
-        _objectBox = await ObjectBoxService.init();
+        _objectBox = await DatabaseService.init();
         AppLogger.i('ObjectBox initialized successfully.');
       }
       return _objectBox!;
@@ -218,9 +218,7 @@ class MessageRepositoryImpl implements MessageRepository {
       final boxService = await _getBox();
       final conversation = boxService.store.box<ConversationEntity>().get(id);
       if (conversation != null) {
-        final contact = _getContactForPhoneNumber(
-          conversation.phoneNumber,
-        );
+        final contact = _getContactForPhoneNumber(conversation.phoneNumber);
         final model = _toConversationModel(
           conversation,
           boxService.store.box<MessageEntity>(),
