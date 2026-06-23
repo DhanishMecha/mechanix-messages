@@ -4,7 +4,7 @@ import 'package:mechanix_messages/core/utils/constants.dart';
 import 'package:mechanix_messages/l10n/app_localizations.dart';
 import 'package:mechanix_messages/core/utils/colors.dart';
 import 'package:mechanix_messages/core/utils/icons.dart';
-import 'package:mechanix_messages/core/utils/message_button.dart';
+import 'package:mechanix_messages/core/widgets/message_button.dart';
 import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_bloc.dart';
 import 'package:mechanix_messages/features/messages/bloc/conversation/conversation_event.dart';
 

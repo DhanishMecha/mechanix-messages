@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mechanix_contacts/mechanix_contacts.dart';
 import 'package:mechanix_messages/core/services/objectbox_service.dart';
-import 'package:mechanix_messages/core/utils/message_button.dart';
+import 'package:mechanix_messages/core/widgets/message_button.dart';
 import 'package:mechanix_contacts/objectbox.g.dart' as contacts_g;
 import 'package:mechanix_messages/features/messages/data/models/conversation_entity.dart';
 import 'package:mechanix_messages/features/messages/data/models/message_entity.dart';

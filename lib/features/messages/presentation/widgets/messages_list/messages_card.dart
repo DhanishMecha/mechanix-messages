@@ -41,6 +41,7 @@ class MessagesCard extends StatelessWidget {
     return Column(
       children: [
         InkWell(
+          splashFactory: NoSplash.splashFactory,
           onTap: () => _onCardTap(context),
           child: Padding(
             padding: const EdgeInsets.all(16),
