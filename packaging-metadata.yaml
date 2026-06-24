@@ -1,0 +1,9 @@
+name: packaging-metadata
+version: 1.0.0
+summary: Metadata for Mechanix Messages app packaging
+applications:
+  - name: messages
+    folder: .
+    binary: mechanix_messages
+    description: "Mechanix Messages application"
+    maintainer: "Mechanix Team <team@mecha.so>"
