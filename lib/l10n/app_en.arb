@@ -1,0 +1,114 @@
+{
+  "@@locale": "en",
+  "allMessages": "All messages",
+  "@allMessages": {
+    "description": "Title of the messages list screen showing all messages"
+  },
+  "filterAll": "All",
+  "@filterAll": {
+    "description": "Label for filter conversations tab to show all messages"
+  },
+  "filterUnread": "Unread",
+  "@filterUnread": {
+    "description": "Label for filter conversations tab to show only unread messages"
+  },
+  "noMessages": "No messages",
+  "@noMessages": {
+    "description": "Text shown when there are no messages in the list"
+  },
+  "newMessage": "New message",
+  "@newMessage": {
+    "description": "Title of the new message screen"
+  },
+  "toLabel": "To: ",
+  "@toLabel": {
+    "description": "Prefix for the search field to target contact selection"
+  },
+  "searchOrEnterPhone": "Search or enter phone number",
+  "@searchOrEnterPhone": {
+    "description": "Placeholder hint inside search input in select contact screen"
+  },
+  "sendMessageTo": "Send message to {query}",
+  "@sendMessageTo": {
+    "description": "Action tile label to start a new chat with a direct phone number",
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "noContactsFound": "No contacts found",
+  "@noContactsFound": {
+    "description": "Message indicating no contacts exist in the local database"
+  },
+  "noMatchingContacts": "No matching contacts",
+  "@noMatchingContacts": {
+    "description": "Message indicating no contacts match the current query"
+  },
+  "noNumber": "No number",
+  "@noNumber": {
+    "description": "Label used for contact with empty phone number"
+  },
+  "writeMessage": "Write a message...",
+  "@writeMessage": {
+    "description": "Hint text for message composer text input"
+  },
+  "youPrefix": "You: ",
+  "@youPrefix": {
+    "description": "Prefix prepended to the preview of outgoing messages"
+  },
+  "searchInMessages": "Search in messages",
+  "@searchInMessages": {
+    "description": "Hint text in the messages list search bar"
+  },
+  "yesterday": "Yesterday",
+  "@yesterday": {
+    "description": "Label for yesterday date"
+  },
+  "todayAt": "Today at {time}",
+  "@todayAt": {
+    "description": "Label for message sent today at specific time",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "yesterdayAt": "Yesterday at {time}",
+  "@yesterdayAt": {
+    "description": "Label for message sent yesterday at specific time",
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "dateAtTime": "{date} at {time}",
+  "@dateAtTime": {
+    "description": "Label for message sent on a specific date at specific time",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "errorNotFound": "Conversation not found",
+  "@errorNotFound": {
+    "description": "Error message when a conversation cannot be found"
+  },
+  "errorLoadFailed": "Failed to load data",
+  "@errorLoadFailed": {
+    "description": "Error message when data load fails"
+  },
+  "errorSendFailed": "Failed to send message",
+  "@errorSendFailed": {
+    "description": "Error message when sending a message fails"
+  },
+  "errorUnknown": "Something went wrong",
+  "@errorUnknown": {
+    "description": "Fallback error message for unknown errors"
+  }
+}
