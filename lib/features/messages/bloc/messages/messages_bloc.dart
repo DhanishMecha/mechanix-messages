@@ -15,6 +15,9 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
     on<LoadConversations>(_onLoadConversations);
     on<FilterConversations>(_onFilterConversations);
     on<LoadMoreConversations>(_onLoadMoreConversations);
+    on<ToggleConversationSelection>(_onToggleConversationSelection);
+    on<ClearConversationSelection>(_onClearConversationSelection);
+    on<DeleteSelectedConversations>(_onDeleteSelectedConversations);
   }
 
   Future<void> _onLoadConversations(
@@ -115,6 +118,67 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
       );
     } catch (e, st) {
       AppLogger.e('MessagesBloc: load failed', error: e, stack: st);
+      emit(const MessagesError(MessagesErrorType.loadFailed));
+    }
+  }
+
+  void _onToggleConversationSelection(
+    ToggleConversationSelection event,
+    Emitter<MessagesState> emit,
+  ) {
+    final current = state;
+    if (current is! MessagesLoaded) return;
+
+    final updatedSet = Set<int>.from(current.selectedConversationIds);
+    if (updatedSet.contains(event.conversationId)) {
+      updatedSet.remove(event.conversationId);
+    } else {
+      updatedSet.add(event.conversationId);
+    }
+
+    emit(
+      current.copyWith(
+        isSelectionModeActive: updatedSet.isNotEmpty,
+        selectedConversationIds: updatedSet,
+      ),
+    );
+  }
+
+  void _onClearConversationSelection(
+    ClearConversationSelection event,
+    Emitter<MessagesState> emit,
+  ) {
+    final current = state;
+    if (current is! MessagesLoaded) return;
+
+    emit(
+      current.copyWith(
+        isSelectionModeActive: false,
+        selectedConversationIds: const {},
+      ),
+    );
+  }
+
+  Future<void> _onDeleteSelectedConversations(
+    DeleteSelectedConversations event,
+    Emitter<MessagesState> emit,
+  ) async {
+    final current = state;
+    if (current is! MessagesLoaded) return;
+
+    final idsToDelete = current.selectedConversationIds.toList();
+    if (idsToDelete.isEmpty) return;
+
+    try {
+      await _repository.deleteConversations(idsToDelete);
+      await _fetchAndEmitConversations(
+        filter: current.filter,
+        query: current.searchQuery,
+        emit: emit,
+        showLoading: true,
+      );
+    } catch (e, st) {
+      AppLogger.e('MessagesBloc: delete selected failed', error: e, stack: st);
       emit(const MessagesError(MessagesErrorType.loadFailed));
     }
   }

@@ -81,4 +81,42 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorUnknown => 'Something went wrong';
+
+  @override
+  String deleteConversationTitle(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Delete conversations',
+      one: 'Delete conversation',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String deleteConversationBody(num count) {
+    final intl.NumberFormat countNumberFormat = intl.NumberFormat.compact(
+      locale: localeName,
+    );
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Are you sure you want to delete the selected conversations?',
+      one: 'Are you sure you want to delete the selected conversation?',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get deleteConversationButton => 'Delete';
+
+  @override
+  String get cancelButton => 'Cancel';
 }

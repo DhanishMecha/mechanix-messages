@@ -110,5 +110,33 @@
   "errorUnknown": "Something went wrong",
   "@errorUnknown": {
     "description": "Fallback error message for unknown errors"
+  },
+  "deleteConversationTitle": "{count, plural, =1{Delete conversation} other{Delete conversations}}",
+  "@deleteConversationTitle": {
+    "description": "Title of the delete confirmation bottom sheet, singular or plural based on count",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "deleteConversationBody": "{count, plural, =1{Are you sure you want to delete the selected conversation?} other{Are you sure you want to delete the selected conversations?}}",
+  "@deleteConversationBody": {
+    "description": "Body text of the delete confirmation bottom sheet, singular or plural based on count",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
+  },
+  "deleteConversationButton": "Delete",
+  "@deleteConversationButton": {
+    "description": "Label for the delete button in the delete confirmation bottom sheet"
+  },
+  "cancelButton": "Cancel",
+  "@cancelButton": {
+    "description": "Label for the cancel button"
   }
 }
