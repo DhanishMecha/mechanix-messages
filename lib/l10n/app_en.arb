@@ -138,5 +138,15 @@
   "cancelButton": "Cancel",
   "@cancelButton": {
     "description": "Label for the cancel button"
+  },
+  "selectedCount": "{count, plural, =1{Selected 1 message} other{Selected {count} messages}}",
+  "@selectedCount": {
+    "description": "Label shown in the top bar when conversations are selected, e.g. Selected 3 messages",
+    "placeholders": {
+      "count": {
+        "type": "num",
+        "format": "compact"
+      }
+    }
   }
 }

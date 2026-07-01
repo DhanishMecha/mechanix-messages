@@ -26,7 +26,7 @@ class MessagesBottomBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               MessageButton(
-                iconPath: AppIcons.close,
+                iconPath: AppIcons.cancel,
                 iconSize: 24,
                 onTap: () {
                   context.read<MessagesBloc>().add(

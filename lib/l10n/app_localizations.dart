@@ -249,6 +249,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancel'**
   String get cancelButton;
+
+  /// Label shown in the top bar when conversations are selected, e.g. Selected 3 messages
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Selected 1 message} other{Selected {count} messages}}'**
+  String selectedCount(num count);
 }
 
 class _AppLocalizationsDelegate

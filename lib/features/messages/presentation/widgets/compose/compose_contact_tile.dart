@@ -32,7 +32,11 @@ class ComposeContactTile extends StatelessWidget {
         );
       }
     } catch (e, st) {
-      AppLogger.e('ComposeContactTile: failed to start conversation', error: e, stack: st);
+      AppLogger.e(
+        'ComposeContactTile: failed to start conversation',
+        error: e,
+        stack: st,
+      );
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppLocalizations.of(context)!.errorUnknown)),
@@ -53,17 +57,17 @@ class ComposeContactTile extends StatelessWidget {
         : l10n.noNumber;
 
     return ListTile(
+      splashColor: Colors.transparent,
+      hoverColor: Colors.transparent,
+      focusColor: Colors.transparent,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       leading: Avatar(initials: initials),
-      title: Text(
-        name,
-        style: Theme.of(context).textTheme.titleSmall,
-      ),
+      title: Text(name, style: Theme.of(context).textTheme.titleSmall),
       subtitle: Text(
         phoneNumber,
-        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          color: AppColors.subtitleColor,
-        ),
+        style: Theme.of(
+          context,
+        ).textTheme.bodySmall?.copyWith(color: AppColors.subtitleColor),
       ),
       onTap: () {
         if (contact.phoneNumbers.isNotEmpty) {

@@ -10,4 +10,5 @@ class AppIcons {
   static const String mute = 'assets/icons/mute.png';
   static const String search = 'assets/icons/search.png';
   static const String send = 'assets/icons/send.png';
+  static const String cancel = 'assets/icons/cancel.png';
 }
