@@ -499,6 +499,10 @@ class MessageRepositoryImpl implements MessageRepository {
 
   @override
   Future<void> deleteConversations(List<int> conversationIds) async {
+    if (conversationIds.isEmpty) {
+      return;
+    }
+
     try {
       final boxService = await _getBox();
       final conversationBox = boxService.store.box<ConversationEntity>();
@@ -511,10 +515,12 @@ class MessageRepositoryImpl implements MessageRepository {
           ConversationEntity_.id.oneOf(conversationIds),
         );
         final query = builder.build();
-        final messageIds = query.findIds();
-        query.close();
-
-        messageBox.removeMany(messageIds);
+        try {
+          final messageIds = query.findIds();
+          messageBox.removeMany(messageIds);
+        } finally {
+          query.close();
+        }
         conversationBox.removeMany(conversationIds);
       });
 
