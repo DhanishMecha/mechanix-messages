@@ -8,6 +8,7 @@ import 'package:mechanix_messages/core/utils/helpers.dart';
 import 'package:mechanix_messages/core/utils/icons.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_bloc.dart';
 import 'package:mechanix_messages/features/messages/bloc/messages/messages_event.dart';
+import 'package:mechanix_messages/features/messages/bloc/messages/messages_state.dart';
 import 'package:mechanix_messages/features/messages/data/models/conversation_model.dart';
 import 'package:mechanix_messages/features/messages/data/models/enums.dart';
 
@@ -28,6 +29,20 @@ class MessagesCard extends StatelessWidget {
     });
   }
 
+  void _handleTap(BuildContext context) {
+    final messagesBloc = context.read<MessagesBloc>();
+    final blocState = messagesBloc.state;
+    if (blocState is MessagesLoaded && blocState.isSelectionModeActive) {
+      messagesBloc.add(ToggleConversationSelection(conversation.id));
+    } else {
+      _onCardTap(context);
+    }
+  }
+
+  void _handleLongPress(BuildContext context) {
+    context.read<MessagesBloc>().add(ToggleConversationSelection(conversation.id));
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -42,12 +57,36 @@ class MessagesCard extends StatelessWidget {
       children: [
         InkWell(
           splashFactory: NoSplash.splashFactory,
-          onTap: () => _onCardTap(context),
+          onTap: () => _handleTap(context),
+          onLongPress: () => _handleLongPress(context),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                BlocSelector<MessagesBloc, MessagesState, ({bool isActive, bool isSelected})>(
+                  selector: (state) {
+                    if (state is MessagesLoaded) {
+                      return (
+                        isActive: state.isSelectionModeActive,
+                        isSelected: state.selectedConversationIds.contains(conversation.id),
+                      );
+                    }
+                    return (isActive: false, isSelected: false);
+                  },
+                  builder: (context, cardState) {
+                    if (!cardState.isActive) {
+                      return const SizedBox.shrink();
+                    }
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _SelectionIndicator(isSelected: cardState.isSelected),
+                        const SizedBox(width: 14),
+                      ],
+                    );
+                  },
+                ),
                 // Avatar
                 Avatar(initials: initials, hasUnread: hasUnread),
                 const SizedBox(width: 14),
@@ -112,6 +151,37 @@ class MessagesCard extends StatelessWidget {
         ),
         const Divider(height: 1, color: AppColors.dividerColor),
       ],
+    );
+  }
+}
+
+class _SelectionIndicator extends StatelessWidget {
+  final bool isSelected;
+  const _SelectionIndicator({required this.isSelected});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 22,
+      height: 22,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: isSelected ? Colors.white : Colors.transparent,
+        border: Border.all(
+          color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.35),
+          width: 1.8,
+        ),
+      ),
+      child: isSelected
+          ? const Center(
+              child: Icon(
+                Icons.check,
+                color: AppColors.bottomBarBg,
+                size: 14,
+                weight: 3.0,
+              ),
+            )
+          : null,
     );
   }
 }

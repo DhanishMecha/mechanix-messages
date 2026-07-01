@@ -481,4 +481,111 @@ void main() {
       },
     );
   });
+
+  group('Selection', () {
+    blocTest<MessagesBloc, MessagesState>(
+      'toggles selection on ToggleConversationSelection',
+      build: () => messagesBloc,
+      seed: () => MessagesLoaded(
+        conversations: tConversations,
+        filter: ConversationFilter.all,
+        searchQuery: '',
+        hasMore: false,
+        isLoadingMore: false,
+      ),
+      act: (bloc) {
+        bloc.add(const ToggleConversationSelection(1));
+      },
+      expect: () => [
+        MessagesLoaded(
+          conversations: tConversations,
+          filter: ConversationFilter.all,
+          searchQuery: '',
+          hasMore: false,
+          isLoadingMore: false,
+          isSelectionModeActive: true,
+          selectedConversationIds: const {1},
+        ),
+      ],
+    );
+
+    blocTest<MessagesBloc, MessagesState>(
+      'clears selection on ClearConversationSelection',
+      build: () => messagesBloc,
+      seed: () => MessagesLoaded(
+        conversations: tConversations,
+        filter: ConversationFilter.all,
+        searchQuery: '',
+        hasMore: false,
+        isLoadingMore: false,
+        isSelectionModeActive: true,
+        selectedConversationIds: const {1},
+      ),
+      act: (bloc) {
+        bloc.add(const ClearConversationSelection());
+      },
+      expect: () => [
+        MessagesLoaded(
+          conversations: tConversations,
+          filter: ConversationFilter.all,
+          searchQuery: '',
+          hasMore: false,
+          isLoadingMore: false,
+          isSelectionModeActive: false,
+          selectedConversationIds: const {},
+        ),
+      ],
+    );
+
+    blocTest<MessagesBloc, MessagesState>(
+      'deletes selected conversations on DeleteSelectedConversations and reloads list',
+      build: () {
+        when(() => mockRepository.deleteConversations(any())).thenAnswer((_) async => {});
+        when(
+          () => mockRepository.getConversations(
+            filter: any(named: 'filter'),
+            query: any(named: 'query'),
+            limit: any(named: 'limit'),
+            offset: any(named: 'offset'),
+          ),
+        ).thenAnswer((_) async => [tConversations[1]]); // return only second item
+        return messagesBloc;
+      },
+      seed: () => MessagesLoaded(
+        conversations: tConversations,
+        filter: ConversationFilter.all,
+        searchQuery: '',
+        hasMore: false,
+        isLoadingMore: false,
+        isSelectionModeActive: true,
+        selectedConversationIds: const {1},
+      ),
+      act: (bloc) {
+        bloc.add(const DeleteSelectedConversations());
+      },
+      expect: () => [
+        const MessagesLoading(),
+        MessagesLoaded(
+          conversations: [tConversations[1]],
+          filter: ConversationFilter.all,
+          searchQuery: '',
+          hasMore: false,
+          isLoadingMore: false,
+          isSelectionModeActive: false,
+          selectedConversationIds: const {},
+        ),
+      ],
+      verify: (_) {
+        verify(() => mockRepository.deleteConversations(const [1])).called(1);
+        verify(
+          () => mockRepository.getConversations(
+            filter: ConversationFilter.all,
+            query: '',
+            limit: Constants.pageSize,
+            offset: 0,
+          ),
+        ).called(1);
+      },
+    );
+  });
 }

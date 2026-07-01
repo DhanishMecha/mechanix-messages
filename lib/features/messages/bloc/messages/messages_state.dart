@@ -29,12 +29,18 @@ class MessagesLoaded extends MessagesState {
 
   final bool isLoadingMore;
 
+  final bool isSelectionModeActive;
+
+  final Set<int> selectedConversationIds;
+
   const MessagesLoaded({
     required this.conversations,
     this.filter = ConversationFilter.all,
     this.searchQuery = '',
     this.hasMore = false,
     this.isLoadingMore = false,
+    this.isSelectionModeActive = false,
+    this.selectedConversationIds = const {},
   });
 
   MessagesLoaded copyWith({
@@ -43,6 +49,8 @@ class MessagesLoaded extends MessagesState {
     String? searchQuery,
     bool? hasMore,
     bool? isLoadingMore,
+    bool? isSelectionModeActive,
+    Set<int>? selectedConversationIds,
   }) {
     return MessagesLoaded(
       conversations: conversations ?? this.conversations,
@@ -50,6 +58,8 @@ class MessagesLoaded extends MessagesState {
       searchQuery: searchQuery ?? this.searchQuery,
       hasMore: hasMore ?? this.hasMore,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+      isSelectionModeActive: isSelectionModeActive ?? this.isSelectionModeActive,
+      selectedConversationIds: selectedConversationIds ?? this.selectedConversationIds,
     );
   }
 
@@ -60,6 +70,8 @@ class MessagesLoaded extends MessagesState {
     searchQuery,
     hasMore,
     isLoadingMore,
+    isSelectionModeActive,
+    selectedConversationIds,
   ];
 }
 

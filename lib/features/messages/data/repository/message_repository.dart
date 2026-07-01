@@ -34,4 +34,6 @@ abstract class MessageRepository {
     int limit,
     int offset,
   });
+
+  Future<void> deleteConversations(List<int> conversationIds);
 }

@@ -225,6 +225,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Something went wrong'**
   String get errorUnknown;
+
+  /// Title of the delete confirmation bottom sheet, singular or plural based on count
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Delete conversation} other{Delete conversations}}'**
+  String deleteConversationTitle(num count);
+
+  /// Body text of the delete confirmation bottom sheet, singular or plural based on count
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Are you sure you want to delete the selected conversation?} other{Are you sure you want to delete the selected conversations?}}'**
+  String deleteConversationBody(num count);
+
+  /// Label for the delete button in the delete confirmation bottom sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get deleteConversationButton;
+
+  /// Label for the cancel button
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancelButton;
 }
 
 class _AppLocalizationsDelegate
