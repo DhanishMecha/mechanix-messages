@@ -12,16 +12,10 @@ class MessagesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MessagesBloc, MessagesState>(
-      buildWhen: (prev, curr) {
-        final prevActive = prev is MessagesLoaded && prev.isSelectionModeActive;
-        final currActive = curr is MessagesLoaded && curr.isSelectionModeActive;
-        return prevActive != currActive;
-      },
-      builder: (context, state) {
-        final isSelectionModeActive =
-            state is MessagesLoaded && state.isSelectionModeActive;
-
+    return BlocSelector<MessagesBloc, MessagesState, bool>(
+      selector: (state) =>
+          state is MessagesLoaded && state.isSelectionModeActive,
+      builder: (context, isSelectionModeActive) {
         return Scaffold(
           appBar: AppBar(titleSpacing: 16, title: const MessagesTopbar()),
           floatingActionButton: isSelectionModeActive
