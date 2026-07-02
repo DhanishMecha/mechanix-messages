@@ -496,4 +496,41 @@ class MessageRepositoryImpl implements MessageRepository {
       return [];
     }
   }
+
+  @override
+  Future<void> deleteConversations(List<int> conversationIds) async {
+    if (conversationIds.isEmpty) {
+      return;
+    }
+
+    try {
+      final boxService = await _getBox();
+      final conversationBox = boxService.store.box<ConversationEntity>();
+      final messageBox = boxService.store.box<MessageEntity>();
+
+      boxService.store.runInTransaction(TxMode.write, () {
+        final builder = messageBox.query();
+        builder.link(
+          MessageEntity_.conversation,
+          ConversationEntity_.id.oneOf(conversationIds),
+        );
+        final query = builder.build();
+        try {
+          final messageIds = query.findIds();
+          messageBox.removeMany(messageIds);
+        } finally {
+          query.close();
+        }
+        conversationBox.removeMany(conversationIds);
+      });
+
+      AppLogger.i('Successfully deleted conversations: $conversationIds');
+    } catch (e, stack) {
+      AppLogger.e(
+        'Error deleting conversations: $conversationIds',
+        error: e,
+        stack: stack,
+      );
+    }
+  }
 }

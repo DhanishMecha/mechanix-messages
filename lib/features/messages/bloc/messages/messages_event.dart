@@ -28,3 +28,19 @@ class FilterConversations extends MessagesEvent {
 class LoadMoreConversations extends MessagesEvent {
   const LoadMoreConversations();
 }
+
+class ToggleConversationSelection extends MessagesEvent {
+  final int conversationId;
+  const ToggleConversationSelection(this.conversationId);
+
+  @override
+  List<Object?> get props => [conversationId];
+}
+
+class ClearConversationSelection extends MessagesEvent {
+  const ClearConversationSelection();
+}
+
+class DeleteSelectedConversations extends MessagesEvent {
+  const DeleteSelectedConversations();
+}

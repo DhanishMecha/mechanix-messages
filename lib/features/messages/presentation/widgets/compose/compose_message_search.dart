@@ -118,9 +118,10 @@ class _ComposeMessageSearchState extends State<ComposeMessageSearch> {
                         child: query.isEmpty
                             ? Text(
                                 l10n.toLabel,
-                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                  color: AppColors.placeholderColor,
-                                ),
+                                style: Theme.of(context).textTheme.bodyLarge
+                                    ?.copyWith(
+                                      color: AppColors.placeholderColor,
+                                    ),
                               )
                             : Image.asset(
                                 AppIcons.search,
@@ -138,9 +139,8 @@ class _ComposeMessageSearchState extends State<ComposeMessageSearch> {
                         style: Theme.of(context).textTheme.bodyLarge,
                         decoration: InputDecoration(
                           hintText: l10n.searchOrEnterPhone,
-                          hintStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.placeholderColor,
-                          ),
+                          hintStyle: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: AppColors.placeholderColor),
                           border: InputBorder.none,
                           isDense: true,
                           contentPadding: EdgeInsets.zero,
@@ -176,12 +176,15 @@ class _ComposeMessageSearchState extends State<ComposeMessageSearch> {
             // Direct Send Option
             if (showDirectSend) ...[
               ListTile(
+                splashColor: Colors.transparent,
+                hoverColor: Colors.transparent,
+                focusColor: Colors.transparent,
                 leading: const Avatar(initials: '#'),
                 title: Text(
                   l10n.sendMessageTo(query),
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w400,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w400),
                 ),
                 onTap: () => _startConversation(query),
               ),

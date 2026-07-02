@@ -16,6 +16,11 @@ class MessagesTopbar extends StatelessWidget {
     return BlocBuilder<MessagesBloc, MessagesState>(
       buildWhen: (prev, curr) => curr is MessagesLoaded,
       builder: (context, state) {
+        final isSelectionMode =
+            state is MessagesLoaded && state.isSelectionModeActive;
+        final selectedCount = state is MessagesLoaded
+            ? state.selectedConversationIds.length
+            : 0;
         final filter = state is MessagesLoaded
             ? state.filter
             : ConversationFilter.all;
@@ -24,12 +29,14 @@ class MessagesTopbar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              l10n.allMessages,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                height: 1.20,
-              ),
+              isSelectionMode
+                  ? l10n.selectedCount(selectedCount)
+                  : l10n.allMessages,
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(height: 1.20),
             ),
-            _FilterToggle(current: filter),
+            if (!isSelectionMode) _FilterToggle(current: filter),
           ],
         );
       },
