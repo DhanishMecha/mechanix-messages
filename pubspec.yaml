@@ -43,6 +43,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/icons/
+    - assets/desktop_icon.png
   fonts:
     - family: Sora
       fonts:
